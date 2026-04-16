@@ -1,0 +1,32 @@
+{
+  "name": "procalyx-web-automation",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Playwright end-to-end tests for Procalyx",
+  "scripts": {
+    "test": "playwright test --project=chromium",
+    "test:all": "playwright test",
+    "test:authenticated": "playwright test --project=chromium-authenticated",
+    "test:authenticated:only": "playwright test --project=chromium-authenticated",
+    "test:sanity": "playwright test --grep @sanity --project=chromium --workers=1",
+    "test:login-headed": "playwright test tests/specs/login.spec.js --project=chromium --headed --workers=1",
+    "test:otp": "npm run test:sanity",
+    "test:logged-in": "npm run test:authenticated",
+    "test:user-mgmt": "playwright test tests/specs/user-management.authenticated.spec.js --project=chromium-authenticated --workers=1",
+    "test:user-mgmt:affordplan": "playwright test tests/specs/user-management.authenticated.spec.js --grep '@login|@affordplan' --project=chromium-authenticated --workers=1",
+    "test:user-mgmt:hospital": "playwright test tests/specs/user-management.authenticated.spec.js --grep '@login|@hospital' --project=chromium-authenticated --workers=1",
+    "test:user-mgmt:manufacturer": "playwright test tests/specs/user-management.authenticated.spec.js --grep '@login|@manufacturer' --project=chromium-authenticated --workers=1",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "test:debug": "playwright test --debug",
+    "test:report": "playwright show-report",
+    "codegen": "playwright codegen",
+    "install:browsers": "playwright install --with-deps"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

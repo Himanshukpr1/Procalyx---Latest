@@ -1,0 +1,12 @@
+# Saved login (cookies / storage) — optional: commit for shared QA session
+.auth/
+
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+.env
+.env.local
+*.log
+.DS_Store
