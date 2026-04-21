@@ -9,6 +9,21 @@ module.exports = {
   loginPath: "/login",
   /** Post-login User Management module */
   userManagementPath: "/dashboard/user-management",
+  /** Hospital Onboarding → Hospital (list + add) */
+  hospitalMastersPath: "/dashboard/hospital-masters",
+  hospitalMastersAddPath: "/dashboard/hospital-masters/add",
+  /** Hospital Onboarding → Hospital Unit (list + add) */
+  hospitalUnitMastersPath: "/dashboard/hospital-unit-masters",
+  hospitalUnitMastersAddPath: "/dashboard/hospital-unit-masters/add",
+  /** Affordplan Master → Manufacturer Masters (data operators) */
+  manufacturerMastersApPath: "/dashboard/manufacturer-masters-ap",
+  manufacturerMastersApAddPath: "/dashboard/manufacturer-masters-ap/add",
+  /** Sidebar **Manufacturer Onboarding** — KAM list + full edit form */
+  manufacturerOnboardingPath: "/dashboard/manufacturer-masters",
+  manufacturerOnboardingEditPathPattern: /\/dashboard\/manufacturer-masters\/edit\//,
+  /** Manufacturer Masters → **Manufacturer Item** (list + add mapping) */
+  manufacturerItemPath: "/dashboard/manufacturer-item",
+  manufacturerItemAddPath: "/dashboard/manufacturer-item/add",
   defaultTimeoutMs: 15_000,
   /** Written by login TC 08 — use with `storageState` in Playwright */
   authStoragePath: path.join(__dirname, "../.auth/qa-session.json"),

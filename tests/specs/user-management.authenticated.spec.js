@@ -10,19 +10,19 @@
  * Examples:
  * - `npm run test:user-mgmt:affordplan` / `:hospital` / `:manufacturer` (includes login)
  * - `npx playwright test tests/specs/user-management.authenticated.spec.js --grep '@login|@hospital' --project=chromium-authenticated --workers=1`
+ *
+ * Session: `.auth/qa-session.json` — one OTP per run via global setup; parallel workers share it. `FORCE_OTP_LOGIN=1` forces OTP in TC01.
  */
 const { test, expect } = require("@playwright/test");
 const env = require("../../data/env");
 const umData = require("../../data/user-management");
 const { UserManagementPage } = require("../pages/UserManagementPage");
 const { buildRandomUserProfile } = require("../../utils/random-user");
-const { performOtpLoginOnPage } = require("../helpers/otp-login");
+const { getStorageStateForAuthenticatedSuite } = require("../helpers/auth-storage");
+const { ensureAuthenticatedSession } = require("../helpers/authenticated-session");
 
 test.describe.configure({ mode: "serial" });
 test.setTimeout(180_000);
-
-/** Clears cookies/storage so TC01 always runs a real email+OTP login (project `use.storageState` would merge otherwise). */
-const EMPTY_STORAGE_STATE = { cookies: [], origins: [] };
 
 test.describe("User management @dashboard", () => {
   /** @type {import('@playwright/test').BrowserContext | undefined} */
@@ -33,7 +33,7 @@ test.describe("User management @dashboard", () => {
   test.beforeAll(async ({ browser }) => {
     sharedContext = await browser.newContext({
       baseURL: env.baseUrl,
-      storageState: EMPTY_STORAGE_STATE,
+      storageState: getStorageStateForAuthenticatedSuite(),
     });
     sharedPage = await sharedContext.newPage();
   });
@@ -45,12 +45,8 @@ test.describe("User management @dashboard", () => {
   });
 
   test("TC01 — Verify AP admin can login with valid credentials @login", async () => {
-    /** Uses `login.validEmail` from `data/test-data.js` inside `performOtpLoginOnPage` (email → Continue → OTP). */
-    await performOtpLoginOnPage(sharedPage);
-
-    const um = new UserManagementPage(sharedPage);
-    await expect(sharedPage).not.toHaveURL(/\/login/);
-    await um.expectSessionShowsAdminUser();
+    /** With saved `.auth/qa-session.json`, opens `/dashboard` without OTP; otherwise `performOtpLoginOnPage` via `ensureAuthenticatedSession`. */
+    await ensureAuthenticatedSession(sharedPage);
   });
 
   test("TC02 — Verify that AP admin user can see user management page", async () => {
