@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
- * Manual: `npm run test:auth:save` — one OTP, writes `.auth/qa-session.json` (same file as global setup).
+ * Manual: `npm run test:auth:save` (Super Admin) or `npm run test:auth:save:ap-operator` — one OTP, writes
+ * `data/env.js`’s `authStoragePath` (see `data/auth-profiles.js`).
  */
 const { saveAuthSessionViaOtp } = require("../helpers/auth-storage");
 

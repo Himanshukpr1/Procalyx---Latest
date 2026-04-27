@@ -2,7 +2,7 @@ const { expect } = require("@playwright/test");
 const { BasePage } = require("./BasePage");
 
 /**
- * **New Manufacturer Item Mapping** — `/dashboard/manufacturer-item/add`
+ * **Manufacturer Item** form — create (`/add`) or **edit** (Actions → pencil on a row; no Add New on the list in current QA).
  */
 class ManufacturerItemAddPage extends BasePage {
   constructor(page) {
@@ -18,32 +18,143 @@ class ManufacturerItemAddPage extends BasePage {
   }
 
   /**
-   * TC05 — **AffordPlan Generic Item**: search by item name and select a matching option.
-   * @param {string} searchText — e.g. `Genexol 350`
+   * True if we are already on the **edit** form (e.g. after TC04) — skip navigating to the list and clicking edit again in TC05.
+   */
+  async isOnEditView() {
+    const u = this.page.url();
+    if (/\/manufacturer-item\/.*(edit|\/edit)/i.test(u) || (/\/manufacturer-item/i.test(u) && u.toLowerCase().includes("edit") && !/\/manufacturer-item\/?$/.test(u))) {
+      return true;
+    }
+    if (await this.page.getByRole("dialog").first().isVisible().catch(() => false)) {
+      if (await this.saveButton.isVisible().catch(() => false)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /** After **Actions** → edit on a list row (same fields as the old /add form; Add New is no longer on the list). */
+  async expectEditManufacturerItemFormLoaded() {
+    await expect(
+      this.page.getByRole("heading", { name: /manufacturer item|item mapping|edit manufacturer/i })
+    ).toBeVisible({ timeout: 30_000 });
+    await expect(this.saveButton).toBeVisible({ timeout: 15_000 });
+  }
+
+  /**
+   * Dismiss the Autocomplete list so focus does not keep filtering / “searching” the next field.
+   */
+  async _closeAffordplanDropdownIfOpen() {
+    if (await this.page.getByRole("listbox").isVisible().catch(() => false)) {
+      await this.page.keyboard.press("Escape");
+    }
+  }
+
+  /**
+   * TC05 — **AffordPlan Generic Item** (MUI Autocomplete). Clears any prior value (edit forms often
+   * rehydrate; `fill('')` alone is unreliable on consecutive runs), types the full query with
+   * `pressSequentially` (debounced search), then waits for the listbox + options before selecting.
+   * @param {string} searchText — e.g. `Genexol 350` from `data/manufacturer-item`
    */
   async fillAffordplanGenericItem(searchText) {
-    const search = this.page.getByPlaceholder(/search by item name/i);
-    await expect(search.first()).toBeVisible({ timeout: 30_000 });
-    await search.first().click();
-    await search.first().fill(searchText);
+    const wanted = searchText.trim();
+    if (!wanted) {
+      throw new Error("fillAffordplanGenericItem: searchText is empty");
+    }
+    // Flexible match: "Genexol 350" vs "Genexol  350" / line breaks in MUI options
+    const matchRe = new RegExp(
+      wanted
+        .split(/\s+/)
+        .map((p) => p.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+        .join("\\s*"),
+      "i"
+    );
 
-    const escaped = searchText.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const re = new RegExp(escaped, "i");
+    await this._closeAffordplanDropdownIfOpen();
+    await this.page.keyboard.press("Escape");
+
+    const inForm = this.page.getByRole("main").getByPlaceholder(/search by item name/i);
+    const field =
+      (await inForm.count()) > 0 ? inForm.first() : this.page.getByPlaceholder(/search by item name/i).first();
+    await expect(field).toBeVisible({ timeout: 30_000 });
+    await field.scrollIntoViewIfNeeded();
+    await field.click();
+
+    await this._clearAutocompleteSearchField(field);
+    await expect
+      .poll(async () => (await field.inputValue()).trim(), { timeout: 5_000 })
+      .toBe("");
+
+    await field.pressSequentially(wanted, { delay: 50 });
 
     await expect(async () => {
-      const opt = this.page.getByRole("option", { name: re });
-      if ((await opt.count()) > 0) {
-        await opt.first().click();
-        return;
-      }
-      const inMenu = this.page
-        .locator('[role="listbox"], [role="menu"]')
-        .filter({ visible: true })
-        .getByText(re)
-        .first();
-      await expect(inMenu).toBeVisible();
-      await inMenu.click();
-    }).toPass({ timeout: 30_000 });
+      const ex = await field.getAttribute("aria-expanded");
+      expect(ex).toBe("true");
+    }).toPass({ timeout: 25_000 });
+
+    const listbox = await this._listboxForAffordplanField(field);
+    await expect(listbox).toBeVisible({ timeout: 10_000 });
+    await expect
+      .poll(async () => listbox.getByRole("option").count(), { timeout: 25_000, intervals: [200, 400, 800] })
+      .toBeGreaterThan(0);
+
+    const option = listbox.getByRole("option").filter({ hasText: matchRe }).first();
+    await expect(option).toBeVisible({ timeout: 20_000 });
+    await option.scrollIntoViewIfNeeded();
+    await option.click();
+
+    await expect
+      .poll(async () => (await field.inputValue()).trim().length, { timeout: 15_000 })
+      .toBeGreaterThan(0);
+
+    await field.blur();
+    await this._closeAffordplanDropdownIfOpen();
+  }
+
+  /**
+   * Remove previous selection / text. MUI Autocomplete + edit screens often keep internal state; second
+   * test runs can leave "genexol" without "350" if not fully cleared.
+   * @param {import('@playwright/test').Locator} field
+   */
+  async _clearAutocompleteSearchField(field) {
+    const root = field.locator("xpath=ancestor::div[contains(@class, 'MuiAutocomplete-root')][1]");
+    const clearBtn = root.locator(
+      "button[title='Clear'], .MuiAutocomplete-clearIndicator, [data-testid='CloseIcon']"
+    );
+    if (await clearBtn.first().isVisible().catch(() => false)) {
+      await clearBtn.first().click();
+    }
+    await field.clear();
+    let v = await field.inputValue();
+    if (v.trim() !== "") {
+      await this.page.keyboard.press("Control+a");
+      await this.page.keyboard.press("Backspace");
+      v = await field.inputValue();
+    }
+    if (v.trim() !== "") {
+      await field.fill("");
+    }
+  }
+
+  /**
+   * MUI Autocomplete: the input gets `aria-controls` pointing at the `listbox` (more stable than
+   * `.MuiAutocomplete-popper … :last()` when multiple poppers exist in the DOM). Falls back to a
+   * visible listbox in the current popper.
+   * @param {import('@playwright/test').Locator} field
+   * @returns {Promise<import('@playwright/test').Locator>}
+   */
+  async _listboxForAffordplanField(field) {
+    const raw =
+      (await field.getAttribute("aria-controls"))?.trim() || (await field.getAttribute("aria-owns"))?.trim();
+    if (raw) {
+      return this.page.locator(`[id="${ManufacturerItemAddPage._quoteAttr(raw)}"]`);
+    }
+    return this.page.locator(".MuiAutocomplete-popper:visible, .MuiPopper-root:visible").locator("[role='listbox']").first();
+  }
+
+  /** @param {string} v */
+  static _quoteAttr(v) {
+    return v.replace(/\\/g, "\\\\").replace(/"/g, "\\\"");
   }
 
   /**

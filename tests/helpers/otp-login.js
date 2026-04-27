@@ -1,13 +1,15 @@
+const { getLoginEmailForAuth } = require("../../data/auth-profiles");
 const testData = require("../../data/test-data");
 const { goToOtpScreenWithRetry } = require("./otp-flow");
 
 /**
- * Email (`test-data.js` validEmail) → OTP → app past `/login`. Caller keeps `page` open.
+ * Email from `getLoginEmailForAuth()` (`AUTH_PROFILE` / `LOGIN_TEST_EMAIL` / `LOGIN_OPERATOR_EMAIL`) → OTP → past `/login`.
  *
  * @param {import('@playwright/test').Page} page
  */
 async function performOtpLoginOnPage(page) {
-  const r = await goToOtpScreenWithRetry(page, testData.login.validEmail, {
+  const email = getLoginEmailForAuth();
+  const r = await goToOtpScreenWithRetry(page, email, {
     captureOtp: true,
     maxAttempts: 4,
     backoffMs: 25_000,

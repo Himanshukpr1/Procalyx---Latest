@@ -2,6 +2,7 @@
  * Test data for automation — login and future flows.
  * Override via env when needed (e.g. CI secrets):
  *   LOGIN_TEST_EMAIL=... LOGIN_INVALID_EMAIL=... npm test
+ * AP operator (separate session file) uses `AUTH_PROFILE=ap_operator` — see `data/auth-profiles.js`.
  */
 
 module.exports = {

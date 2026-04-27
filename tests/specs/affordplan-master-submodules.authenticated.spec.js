@@ -4,6 +4,7 @@
  *
  * Tags: `@login` (TC01), `@affordplan-master-sub` (TC02–TC42).
  * `npx playwright test tests/specs/affordplan-master-submodules.authenticated.spec.js --grep '@login|@affordplan-master-sub' --project=chromium-authenticated --workers=1`
+ * AP operator: `npm run test:affordplan-master-sub:ap-operator:flow`.
  */
 const { test } = require("@playwright/test");
 const env = require("../../data/env");

@@ -1,6 +1,7 @@
 const { test, expect } = require("../fixtures/base");
 const env = require("../../data/env");
 const testData = require("../../data/test-data");
+const { getLoginEmailForAuth } = require("../../data/auth-profiles");
 const { LoginPage } = require("../pages/LoginPage");
 const { OtpPage } = require("../pages/OtpPage");
 const { goToOtpScreenWithRetry } = require("../helpers/otp-flow");
@@ -30,7 +31,7 @@ test.describe("Login", () => {
     await context.close();
   });
 
-  test.describe("Login — email (TC 01–04)", () => {
+  test.describe("Login — email (TC 01–04)", { tag: "@login-email" }, () => {
     test.beforeEach(async () => {
       await loginPage.open(env.loginPath);
     });
@@ -92,7 +93,8 @@ test.describe("Login", () => {
     let capturedOtp;
 
     test.beforeAll(async () => {
-      const r = await goToOtpScreenWithRetry(page, testData.login.validEmail, {
+      const loginEmail = getLoginEmailForAuth();
+      const r = await goToOtpScreenWithRetry(page, loginEmail, {
         captureOtp: true,
         maxAttempts: 4,
         backoffMs: 25_000,
@@ -121,7 +123,7 @@ test.describe("Login", () => {
     });
 
     test("TC 06 — Verify the email id that is visible is correct", async () => {
-      const email = testData.login.validEmail;
+      const email = getLoginEmailForAuth();
       await expect(otpPage.displayedEmail(email)).toBeVisible();
       await expect(otpPage.promptWithEmail).toContainText(email);
       const emailBox = page.getByRole("textbox", { name: /Email ID/i });

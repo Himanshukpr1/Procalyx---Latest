@@ -1,8 +1,10 @@
 const path = require("path");
+const { resolveAuthStoragePath } = require("./auth-profiles");
 
 /**
  * Central place for URLs, timeouts, and static test data.
  * Override BASE_URL via environment: BASE_URL=https://your-app.com npm test
+ * Auth session file: `AUTH_PROFILE=superadmin|ap_operator` — see `data/auth-profiles.js`.
  */
 module.exports = {
   baseUrl: process.env.BASE_URL || "https://qa.procalyx.net",
@@ -25,6 +27,6 @@ module.exports = {
   manufacturerItemPath: "/dashboard/manufacturer-item",
   manufacturerItemAddPath: "/dashboard/manufacturer-item/add",
   defaultTimeoutMs: 15_000,
-  /** Written by login TC 08 — use with `storageState` in Playwright */
-  authStoragePath: path.join(__dirname, "../.auth/qa-session.json"),
+  /** Cookie/storage file for the active `AUTH_PROFILE` (Super Admin or AP operator). */
+  authStoragePath: resolveAuthStoragePath(),
 };

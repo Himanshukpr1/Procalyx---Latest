@@ -1,8 +1,9 @@
 /**
- * Manufacturer Masters → **Manufacturer Item** (`/dashboard/manufacturer-item`, `/add`).
+ * Manufacturer Masters → **Manufacturer Item** (`/dashboard/manufacturer-item`). List has no **Add New**; open a row via **Actions** → edit (random row).
  *
- * Tags: `@login` (TC01), `@manufacturer-item` (TC02–TC10).
+ * Tags: `@login` (TC01), `@manufacturer-item` (TC02–TC10). TC04 opens **Edit** once; TC05 continues on the same form (no second list navigation / edit click).
  * `npx playwright test tests/specs/manufacturer-item.authenticated.spec.js --grep '@login|@manufacturer-item' --project=chromium-authenticated --workers=1`
+ * AP operator: `npm run test:manufacturer-item:ap-operator:flow` (sets `AUTH_PROFILE=ap_operator`; see `data/auth-profiles.js`).
  */
 const { test } = require("@playwright/test");
 const env = require("../../data/env");
@@ -55,10 +56,10 @@ test.describe("Manufacturer Item @dashboard", () => {
     await list.expectManufacturerItemListVisible();
   });
 
-  test("TC04 — Verify Add new Button is Clickable @manufacturer-item", async () => {
+  test("TC04 — Verify AP admin is able to click on edit icon under Actions @manufacturer-item", async () => {
     const list = new ManufacturerItemPage(sharedPage);
     await list.openManufacturerItemList(env.manufacturerItemPath);
-    await list.expectAddNewButtonClickable();
+    await list.clickRandomRowEditInActions();
   });
 
   test("TC05 — Verify AP admin is able to search and fill AffordPlan Generic Item @manufacturer-item", async () => {
@@ -67,9 +68,11 @@ test.describe("Manufacturer Item @dashboard", () => {
     itemPayload = itemData.buildManufacturerItemPayload();
     createdItemName = itemPayload.itemName;
 
-    await list.openManufacturerItemList(env.manufacturerItemPath);
-    await list.clickAddNew();
-    await add.expectAddManufacturerItemFormLoaded();
+    if (!(await add.isOnEditView())) {
+      await list.openManufacturerItemList(env.manufacturerItemPath);
+      await list.clickRandomRowEditInActions();
+    }
+    await add.expectEditManufacturerItemFormLoaded();
     await add.fillAffordplanGenericItem(itemData.affordplanGenericItemSearch);
   });
 

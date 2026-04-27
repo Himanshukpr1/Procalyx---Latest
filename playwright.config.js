@@ -1,9 +1,9 @@
 // @ts-check
 const fs = require("fs");
-const path = require("path");
 const { defineConfig, devices } = require("@playwright/test");
+const { resolveAuthStoragePath } = require("./data/auth-profiles");
 
-const authStoragePath = path.join(__dirname, ".auth/qa-session.json");
+const authStoragePath = resolveAuthStoragePath();
 const authenticatedStorage = fs.existsSync(authStoragePath) ? { storageState: authStoragePath } : {};
 
 /** @see https://playwright.dev/docs/test-configuration */
