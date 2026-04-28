@@ -1,7 +1,10 @@
-const { getLoginEmailForAuth } = require("../../data/auth-profiles");
+const { expect } = require("@playwright/test");
+const { getAuthProfile, getLoginEmailForAuth, urlPathIsLoginPage } = require("../../data/auth-profiles");
 const testData = require("../../data/test-data");
 const { goToOtpScreenWithRetry } = require("./otp-flow");
 const { applyPostOtpHkamContextIfNeeded } = require("./post-otp-hkam-context");
+
+const HKAM_POST_LOGIN_MS = 90_000;
 
 /**
  * Email from `getLoginEmailForAuth()` (`AUTH_PROFILE` / `LOGIN_TEST_EMAIL` / `LOGIN_OPERATOR_EMAIL`) → OTP → past `/login`.
@@ -32,6 +35,12 @@ async function performOtpLoginOnPage(page) {
   await r.otpPage.fillOtp(otp);
   await r.otpPage.waitForRedirectAwayFromLoginOtpStep(60_000);
   await applyPostOtpHkamContextIfNeeded(page);
+
+  if (getAuthProfile() === "hkam_operator") {
+    await expect(async () => {
+      expect(urlPathIsLoginPage(page.url())).toBe(false);
+    }).toPass({ timeout: HKAM_POST_LOGIN_MS });
+  }
 }
 
 module.exports = { performOtpLoginOnPage };

@@ -63,10 +63,32 @@ function resolveAuthStoragePath() {
   return path.join(root, "qa-session.json");
 }
 
+/**
+ * Auth **login** route (path or hash-router), for session checks aligned with `dashboard.smoke.authenticated.spec.js`.
+ * @param {string} urlString
+ */
+function urlPathIsLoginPage(urlString) {
+  try {
+    const u = new URL(urlString);
+    const p = u.pathname.replace(/\/$/, "") || "/";
+    if (p === "/login" || p.startsWith("/login/")) {
+      return true;
+    }
+    const h = (u.hash || "").replace(/^#/, "");
+    if (/^\/?login(\/|\?|$)/i.test(h)) {
+      return true;
+    }
+    return false;
+  } catch {
+    return /(^|\/)login(\/|\?|$)/i.test(urlString);
+  }
+}
+
 module.exports = {
   getAuthProfile,
   getLoginEmailForAuth,
   resolveAuthStoragePath,
+  urlPathIsLoginPage,
   DEFAULT_AP_OPERATOR_EMAIL: DEFAULT_OPERATOR_EMAIL,
   DEFAULT_HKAM_EMAIL,
 };

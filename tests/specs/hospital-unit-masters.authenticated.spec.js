@@ -1,6 +1,6 @@
 /**
- * Hospital Unit Master — Hospital Onboarding → **Hospital Unit** (`/dashboard/hospital-unit-masters`, `/add`).
- * Reuses `HospitalAddPage` with `FORM_VARIANTS.HOSPITAL_UNIT` (extra **Hospital Selection** step).
+ * Hospital Unit Master — Super Admin: `/dashboard/hospital-unit-masters`; HKAM: `/hkam/hospital-unit-management` (+ `/add`).
+ * Reuses `HospitalAddPage` with **Hospital Unit** variant (extra **Hospital Selection** step).
  *
  * **TC05** orders hospitals (**Auto Hospital …** newest first), then picks the first. **TC14** retries submit with the
  * **next** hospitals (full form refill) if creation fails.
@@ -8,22 +8,22 @@
  * Tags: `@login` (TC01), `@hospital-unit-master` (TC02–TC16).
  * `npx playwright test tests/specs/hospital-unit-masters.authenticated.spec.js --grep '@login|@hospital-unit-master' --project=chromium-authenticated --workers=1`
  *
- * Session: `.auth/qa-session.json` from global setup — parallel workers reuse one login. **TC01** is skipped (storage state from global setup).
- * **HKAM operator** (`AUTH_PROFILE=hkam_operator`): **TC09** skipped (Infrastructure auto-filled); TC14 retries omit Infrastructure fill for that profile.
+ * Session: `.auth/qa-session.json` from global setup — parallel workers reuse one login. `beforeAll` calls `ensureAuthenticatedSession` before TC01 (light `@login` check only).
+ * **HKAM operator** (`AUTH_PROFILE=hkam_operator`): **TC02** skipped (no Hospital Onboarding nav); **TC10** skipped via `testInfo.skip` (AP KAM Info auto-filled). Sidebar label **Hospital Unit Masters** — see `HospitalUnitMastersPage.clickHospitalUnitSidebarLink`.
  */
 const { test, expect } = require("@playwright/test");
 const env = require("../../data/env");
 const hmData = require("../../data/hospital-masters");
 const { HospitalMastersPage } = require("../pages/HospitalMastersPage");
 const { HospitalUnitMastersPage } = require("../pages/HospitalUnitMastersPage");
-const { HospitalAddPage, FORM_VARIANTS } = require("../pages/HospitalAddPage");
+const { HospitalAddPage, getFormVariants } = require("../pages/HospitalAddPage");
 const { getStorageStateForAuthenticatedSuite } = require("../helpers/auth-storage");
 const { ensureAuthenticatedSession } = require("../helpers/authenticated-session");
 const { getAuthProfile } = require("../../data/auth-profiles");
 
 test.describe.configure({ mode: "serial" });
 test.setTimeout(600_000);
-const UNIT_VARIANT = FORM_VARIANTS.HOSPITAL_UNIT;
+const UNIT_VARIANT = getFormVariants().HOSPITAL_UNIT;
 
 /**
  * TC06–TC13 — after Hospital Selection (used again inside TC14 when switching hospitals).
@@ -34,9 +34,7 @@ async function fillHospitalUnitFormAfterSelection(add, hospitalPayload) {
   await add.fillHospitalKybSection(hospitalPayload);
   await add.fillHospitalInformationSection(hospitalPayload);
   await add.fillHospitalHisSection();
-  if (getAuthProfile() !== "hkam_operator") {
-    await add.fillHospitalInfrastructureSection(hospitalPayload);
-  }
+  await add.fillHospitalInfrastructureSection(hospitalPayload);
   await add.fillApKamInfoSection();
   await add.expectApKamAutoFilledEmailAndDesignation();
   await add.fillHospitalSpocSection(hospitalPayload);
@@ -61,6 +59,7 @@ test.describe("Hospital Unit Master @dashboard", () => {
       storageState: getStorageStateForAuthenticatedSuite(),
     });
     sharedPage = await sharedContext.newPage();
+    await ensureAuthenticatedSession(sharedPage);
   });
 
   test.afterAll(async () => {
@@ -69,23 +68,20 @@ test.describe("Hospital Unit Master @dashboard", () => {
     }
   });
 
-  test.skip(
-    true,
-    "TC01 skipped — authenticated context uses global setup / saved storage state (@login covered elsewhere)"
-  );
-
-  test.skip(
-    true,
-    "TC01 skipped — authenticated context uses global setup / saved storage state (@login covered elsewhere)"
-  );
-
   test("TC01 — Verify AP admin can login with valid credentials @login", async () => {
-    await ensureAuthenticatedSession(sharedPage);
+    const { urlPathIsLoginPage } = require("../../data/auth-profiles");
+    await expect(async () => {
+      expect(urlPathIsLoginPage(sharedPage.url())).toBe(false);
+    }).toPass({ timeout: 15_000 });
   });
 
-  test("TC02 — Verify AP admin can click on Hospital Onboarding @hospital-unit-master", async () => {
+  test("TC02 — Verify AP admin can click on Hospital Onboarding @hospital-unit-master", async ({}, testInfo) => {
+    testInfo.skip(
+      getAuthProfile() === "hkam_operator",
+      "HKAM Operator: sidebar has no Hospital Onboarding expand step — TC02 not applicable"
+    );
     const list = new HospitalMastersPage(sharedPage);
-    await list.goto("/dashboard");
+    await list.goto(env.appHomePath, { waitUntil: "domcontentloaded" });
     await list.clickHospitalOnboardingNav();
   });
 
@@ -138,18 +134,17 @@ test.describe("Hospital Unit Master @dashboard", () => {
     await add.fillHospitalHisSection();
   });
 
-  test.skip(
-    getAuthProfile() === "hkam_operator",
-    "HKAM Operator: Hospital Unit Infrastructure is auto-filled — TC09 not applicable"
-  );
-
   test("TC09 — Verify AP admin is able to fill Hospital Unit Infrastructure section @hospital-unit-master", async () => {
     const add = new HospitalAddPage(sharedPage, UNIT_VARIANT);
     if (!hospitalPayload) throw new Error("Run TC05 first — hospitalPayload is missing.");
     await add.fillHospitalInfrastructureSection(hospitalPayload);
   });
 
-  test("TC10 — Verify AP admin is able to fill AP KAM Info section @hospital-unit-master", async () => {
+  test("TC10 — Verify AP admin is able to fill AP KAM Info section @hospital-unit-master", async ({}, testInfo) => {
+    testInfo.skip(
+      getAuthProfile() === "hkam_operator",
+      "HKAM Operator: AP KAM Info is auto-filled — TC10 not applicable"
+    );
     const add = new HospitalAddPage(sharedPage, UNIT_VARIANT);
     if (!hospitalPayload) throw new Error("Run TC05 first — hospitalPayload is missing.");
     await add.fillApKamInfoSection();

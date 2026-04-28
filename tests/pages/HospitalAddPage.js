@@ -1,7 +1,8 @@
 const { expect } = require("@playwright/test");
 const { BasePage } = require("./BasePage");
 const hmData = require("../../data/hospital-masters");
-const { createHospitalAddLocators, FORM_VARIANTS } = require("../locators/hospital-masters-add.locators");
+const { createHospitalAddLocators } = require("../locators/hospital-masters-add.locators");
+const { getFormVariants } = require("../config/hospital-form-variants");
 
 /**
  * Prefer `Auto Hospital …` options (matches `uniqueHospitalName()`), newest first by embedded timestamp.
@@ -28,14 +29,15 @@ function orderHospitalSelectionLabels(labels) {
 class HospitalAddPage extends BasePage {
   /**
    * @param {import('@playwright/test').Page} page
-   * @param {typeof FORM_VARIANTS.HOSPITAL_MASTER} [variant] — default Hospital Master
+   * @param {ReturnType<typeof getFormVariants>["HOSPITAL_MASTER"]} [variant] — default Hospital Master
    */
-  constructor(page, variant = FORM_VARIANTS.HOSPITAL_MASTER) {
+  constructor(page, variant) {
     super(page);
-    this.variant = variant;
-    this.pageTitle = page.getByText(variant.pageTitlePattern).first();
+    const V = getFormVariants();
+    this.variant = variant === undefined ? V.HOSPITAL_MASTER : variant;
+    this.pageTitle = page.getByText(this.variant.pageTitlePattern).first();
     this.submitButton = page.getByRole("button", { name: /submit|save|create|send for approval/i });
-    this.loc = createHospitalAddLocators(page, hmData.hospitalAddDropdownDefaults(), variant);
+    this.loc = createHospitalAddLocators(page, hmData.hospitalAddDropdownDefaults(), this.variant);
   }
 
   sec() {
@@ -207,7 +209,7 @@ class HospitalAddPage extends BasePage {
     await this.loc.hospitalName.fill(d.hospitalName);
     await this.selectHospitalTypeOption();
     /** Hospital Unit form has no `info.numberOfUnits` (see `HospitalUnitForm` InfoSection). */
-    if (this.variant.id !== FORM_VARIANTS.HOSPITAL_UNIT.id) {
+    if (this.variant.id !== "hospitalUnit") {
       await this.loc.numberOfUnitsInput.fill(String(d.defaultUnits));
     }
     await this.loc.addressInputField.fill(d.operationalAddress);
@@ -224,7 +226,7 @@ class HospitalAddPage extends BasePage {
   async fillHospitalHisSection() {
     await this.scrollToFormSection(this.sec().HIS);
     const ui = hmData.hospitalAddDropdownDefaults();
-    if (this.variant.id === FORM_VARIANTS.HOSPITAL_UNIT.id) {
+    if (this.variant.id === "hospitalUnit") {
       await expect(this.loc.hospitalUnitHisInput).toBeVisible({ timeout: 15_000 });
       await this.loc.hospitalUnitHisInput.fill(ui.hisVendor);
     } else {
@@ -316,4 +318,4 @@ class HospitalAddPage extends BasePage {
   }
 }
 
-module.exports = { HospitalAddPage, FORM_VARIANTS };
+module.exports = { HospitalAddPage, getFormVariants };

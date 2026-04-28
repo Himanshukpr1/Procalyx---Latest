@@ -1,8 +1,11 @@
 /**
- * Shared add-form flows: **Hospital** (`/hospital-masters/add`) vs **Hospital Unit** (`/hospital-unit-masters/add`).
+ * Shared add-form flows: **Hospital** vs **Hospital Unit**.
  * `FormSection` `title` → `role="region"` + `aria-label` (procalyx-ui).
+ * URL regexes follow `data/env.js` for the active `AUTH_PROFILE` (HKAM uses `/hkam/...`).
  */
-const HOSPITAL_MASTER = {
+const { getAuthProfile } = require("../../data/auth-profiles");
+
+const HOSPITAL_MASTER_BASE = {
   id: "hospitalMaster",
   addUrlRegex: /\/dashboard\/hospital-masters\/add/,
   listUrlRegex: /\/dashboard\/hospital-masters\/?$/,
@@ -22,7 +25,7 @@ const HOSPITAL_MASTER = {
   },
 };
 
-const HOSPITAL_UNIT = {
+const HOSPITAL_UNIT_BASE = {
   id: "hospitalUnit",
   addUrlRegex: /\/dashboard\/hospital-unit-masters\/add/,
   listUrlRegex: /\/dashboard\/hospital-unit-masters\/?$/,
@@ -43,11 +46,40 @@ const HOSPITAL_UNIT = {
   },
 };
 
+function augmentVariantForHkam(base) {
+  if (getAuthProfile() !== "hkam_operator") {
+    return base;
+  }
+  if (base.id === "hospitalMaster") {
+    return {
+      ...base,
+      addUrlRegex: /\/hkam\/hospital-management\/add/,
+      listUrlRegex: /\/hkam\/hospital-management\/?$/,
+    };
+  }
+  if (base.id === "hospitalUnit") {
+    return {
+      ...base,
+      addUrlRegex: /\/hkam\/hospital-unit-management\/add/,
+      listUrlRegex: /\/hkam\/hospital-unit-management\/?$/,
+    };
+  }
+  return base;
+}
+
+function getFormVariants() {
+  return {
+    HOSPITAL_MASTER: augmentVariantForHkam(HOSPITAL_MASTER_BASE),
+    HOSPITAL_UNIT: augmentVariantForHkam(HOSPITAL_UNIT_BASE),
+  };
+}
+
 module.exports = {
-  FORM_VARIANTS: {
-    HOSPITAL_MASTER,
-    HOSPITAL_UNIT,
+  getFormVariants,
+  /** @deprecated prefer `getFormVariants()` — values depend on `AUTH_PROFILE`. */
+  get FORM_VARIANTS() {
+    return getFormVariants();
   },
-  /** Backward compat — same as `FORM_VARIANTS.HOSPITAL_MASTER.section` */
-  SECTION: HOSPITAL_MASTER.section,
+  /** Backward compat — same as base Hospital Master `section` (labels unchanged for HKAM). */
+  SECTION: HOSPITAL_MASTER_BASE.section,
 };

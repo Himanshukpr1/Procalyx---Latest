@@ -3,11 +3,13 @@
  *
  * @param {import('@playwright/test').Page} page
  * @param {object} [ui]
- * @param {typeof import("../config/hospital-form-variants").FORM_VARIANTS.HOSPITAL_MASTER} [variant]
+ * @param {object} [variant] — from `getFormVariants()` (defaults to Hospital Master)
  */
-const { FORM_VARIANTS, SECTION: SECTION_LEGACY } = require("../config/hospital-form-variants");
+const { getFormVariants, SECTION: SECTION_LEGACY } = require("../config/hospital-form-variants");
 
-function createHospitalAddLocators(page, ui = {}, variant = FORM_VARIANTS.HOSPITAL_MASTER) {
+function createHospitalAddLocators(page, ui = {}, variant) {
+  const FORM_VARIANTS = getFormVariants();
+  const v = variant === undefined ? FORM_VARIANTS.HOSPITAL_MASTER : variant;
   const {
     hospitalTypeOption = "Clinic/ Nursing Home",
     countryOption = "India",
@@ -23,9 +25,9 @@ function createHospitalAddLocators(page, ui = {}, variant = FORM_VARIANTS.HOSPIT
     spocDepartmentOption = "Operations",
   } = ui;
 
-  const sec = variant.section;
-  const spoc = variant.spocFieldPrefix;
-  const isHospitalUnit = variant.id === FORM_VARIANTS.HOSPITAL_UNIT.id;
+  const sec = v.section;
+  const spoc = v.spocFieldPrefix;
+  const isHospitalUnit = v.id === FORM_VARIANTS.HOSPITAL_UNIT.id;
 
   const hospitalInfoSection = page.getByRole("region", { name: sec.INFO });
   const hospitalHisSection = page.getByRole("region", { name: sec.HIS });
@@ -102,7 +104,11 @@ function createHospitalAddLocators(page, ui = {}, variant = FORM_VARIANTS.HOSPIT
 
 module.exports = {
   createHospitalAddLocators,
-  /** @deprecated prefer `FORM_VARIANTS.HOSPITAL_MASTER.section` */
+  /** @deprecated prefer `getFormVariants().HOSPITAL_MASTER.section` */
   SECTION: SECTION_LEGACY,
-  FORM_VARIANTS,
+  getFormVariants,
+  /** @deprecated prefer `getFormVariants()` */
+  get FORM_VARIANTS() {
+    return getFormVariants();
+  },
 };
