@@ -1,3 +1,4 @@
+const { expect } = require("@playwright/test");
 const { BasePage } = require("./BasePage");
 
 /**
@@ -18,6 +19,13 @@ class LoginPage extends BasePage {
     this.emailFieldLabel = page.getByText("Email ID", { exact: true });
     /** Accessible name comes from placeholder "you@example.com" */
     this.emailInput = page.getByRole("textbox", { name: "you@example.com" });
+    /**
+     * HKAM: shown **after successful OTP** on `/login` — email visible, then **Select Hospital Unit Name**
+     * (MUI combobox / placeholder).
+     */
+    this.hospitalUnitCombobox = page
+      .getByRole("combobox", { name: /select hospital unit name/i })
+      .or(page.getByPlaceholder(/select hospital unit name/i));
     this.continueButton = page.getByRole("button", { name: "Continue" });
 
     this.validationMessage = page.locator('[role="alert"]');
@@ -50,6 +58,24 @@ class LoginPage extends BasePage {
     const input = this.emailInput.or(this.page.getByPlaceholder("you@example.com"));
     await input.waitFor({ state: "visible", timeout: 30_000 });
     await input.fill(email);
+  }
+
+  /**
+   * HKAM only — **after OTP is accepted**: screen still on `/login` with user email and
+   * **Select Hospital Unit Name**. Open dropdown, choose **My Dashboard**, then **Continue**.
+   */
+  async completeHkamPostOtpHospitalUnitStep() {
+    const combo = this.hospitalUnitCombobox;
+    await combo.first().waitFor({ state: "visible", timeout: 25_000 });
+    await combo.first().click();
+    const myDashboard = this.page.getByRole("option", { name: /^My Dashboard$/i });
+    await myDashboard.first().waitFor({ state: "visible", timeout: 15_000 });
+    await myDashboard.first().click();
+    await expect(async () => {
+      expect(await this.continueButton.isEnabled()).toBe(true);
+    }).toPass({ timeout: 15_000 });
+    await this.continueButton.click();
+    await this.page.waitForLoadState("domcontentloaded");
   }
 
   async submitContinue() {

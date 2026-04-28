@@ -4,7 +4,7 @@ const { resolveAuthStoragePath } = require("./auth-profiles");
 /**
  * Central place for URLs, timeouts, and static test data.
  * Override BASE_URL via environment: BASE_URL=https://your-app.com npm test
- * Auth session file: `AUTH_PROFILE=superadmin|ap_operator` — see `data/auth-profiles.js`.
+ * Auth session file: `AUTH_PROFILE=superadmin|ap_operator|hkam_operator` — see `data/auth-profiles.js`.
  */
 module.exports = {
   baseUrl: process.env.BASE_URL || "https://qa.procalyx.net",

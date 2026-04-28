@@ -1,6 +1,7 @@
 const { getLoginEmailForAuth } = require("../../data/auth-profiles");
 const testData = require("../../data/test-data");
 const { goToOtpScreenWithRetry } = require("./otp-flow");
+const { applyPostOtpHkamContextIfNeeded } = require("./post-otp-hkam-context");
 
 /**
  * Email from `getLoginEmailForAuth()` (`AUTH_PROFILE` / `LOGIN_TEST_EMAIL` / `LOGIN_OPERATOR_EMAIL`) → OTP → past `/login`.
@@ -30,6 +31,7 @@ async function performOtpLoginOnPage(page) {
 
   await r.otpPage.fillOtp(otp);
   await r.otpPage.waitForRedirectAwayFromLoginOtpStep(60_000);
+  await applyPostOtpHkamContextIfNeeded(page);
 }
 
 module.exports = { performOtpLoginOnPage };

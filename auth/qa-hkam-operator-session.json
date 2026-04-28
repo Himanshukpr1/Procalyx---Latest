@@ -1,0 +1,30 @@
+{
+  "cookies": [],
+  "origins": [
+    {
+      "origin": "https://qa.procalyx.net",
+      "localStorage": [
+        {
+          "name": "auth_token",
+          "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OWM0MmY2MmY1ODkwNjEyODcxYmVhMDgiLCJuYW1lIjoiaGthbSBhcCs3OTMiLCJlbWFpbCI6ImhrYW1hcEB5b3BtYWlsLmNvbSIsInJvbGVzIjpbeyJyb2xlX3VuaXF1ZV9uYW1lIjoiSF9LQU0iLCJyb2xlX3Nob3dfbmFtZSI6IkhLQU0gT3BlcmF0b3IiLCJzdGFrZV9ob2xkZXIiOiJhZmZvcmRwbGFuIiwiX2lkIjoiNjljNDJmNjJmNTg5MDYxMjg3MWJlYTA5IiwiaWQiOiI2OWM0MmY2MmY1ODkwNjEyODcxYmVhMDkifV0sIm9yZ2FuaXphdGlvbiI6eyJpZCI6IjY5MTVmNzgyYjRkYWZmMDI4MjVmZTVjNCIsIm5hbWUiOiJBZmZvcmRwbGFuIiwidHlwZSI6ImFmZm9yZHBsYW4ifSwiaXNIb3NwaXRhbFVuaXQiOmZhbHNlLCJkZXNpZ25hdGlvbiI6ImhrYW0iLCJkZXBhcnRtZW50IjoiNjkwOWYyYTc0YzJlMmE0OTU4MjQ4YzlkIiwidGhlcmFwaWVzIjpbXSwiY291bnRyaWVzIjpbeyJpZCI6IjY5MDE5YjYzMjU5N2FiNmNjNDAzZWZkZiIsImNvdW50eV9jb2RlIjoiSU4iLCJuYW1lIjoiSW5kaWEiLCJfaWQiOiI2OWM0MmY2MmY1ODkwNjEyODcxYmVhMGEifV0sInpvbmVzIjpbXSwic3RhdGVzIjpbeyJpZCI6IjY5MDg5ZTQzYjg0YjVmODc4MjNkZjBhNiIsInN0YXRlX2NvZGUiOiJQQiIsIm5hbWUiOiJQdW5qYWIiLCJfaWQiOiI2OWM0MmY2MmY1ODkwNjEyODcxYmVhMGIifV0sImNpdGllcyI6W3siaWQiOiI2OTYwY2JhMzRhZjFkOGM3MmI4MTUwM2YiLCJjaXR5X2NvZGUiOiJQQl9CQUtMT0giLCJuYW1lIjoiQmFrbG9oIiwiX2lkIjoiNjljNDJmNjJmNTg5MDYxMjg3MWJlYTBjIn1dLCJpYXQiOjE3NzczNTM0NjEsImV4cCI6MTc3NzM4OTQ2MX0.Rq_Og9AEgRFiN5jB35jPQZdbTGw6gusSnQ697SVvcww"
+        },
+        {
+          "name": "user_data",
+          "value": "{\"_id\":\"69c42f62f5890612871bea08\",\"id\":\"69c42f62f5890612871bea08\",\"email\":\"hkamap@yopmail.com\",\"name\":\"hkam ap+793\",\"designation\":\"hkam\",\"department\":\"6909f2a74c2e2a4958248c9d\",\"roles\":[{\"role_unique_name\":\"H_KAM\",\"role_show_name\":\"HKAM Operator\",\"stake_holder\":\"affordplan\",\"_id\":\"69c42f62f5890612871bea09\",\"id\":\"69c42f62f5890612871bea09\"}],\"organization\":{\"id\":\"6915f782b4daff02825fe5c4\",\"name\":\"Affordplan\",\"type\":\"affordplan\"},\"therapies\":[],\"countries\":[{\"id\":\"69019b632597ab6cc403efdf\",\"county_code\":\"IN\",\"name\":\"India\",\"_id\":\"69c42f62f5890612871bea0a\"}],\"zones\":[],\"states\":[{\"id\":\"69089e43b84b5f87823df0a6\",\"state_code\":\"PB\",\"name\":\"Punjab\",\"_id\":\"69c42f62f5890612871bea0b\"}],\"cities\":[{\"id\":\"6960cba34af1d8c72b81503f\",\"city_code\":\"PB_BAKLOH\",\"name\":\"Bakloh\",\"_id\":\"69c42f62f5890612871bea0c\"}],\"isHospitalUnit\":false,\"role\":\"H_KAM\",\"permissions\":[\"read\"],\"createdAt\":\"2026-04-28T05:17:41.000Z\",\"updatedAt\":\"2026-04-28T05:17:41.508Z\"}"
+        },
+        {
+          "name": "redirect_path",
+          "value": "/hkam"
+        },
+        {
+          "name": "refresh_token",
+          "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OWM0MmY2MmY1ODkwNjEyODcxYmVhMDgiLCJuYW1lIjoiaGthbSBhcCs3OTMiLCJlbWFpbCI6ImhrYW1hcEB5b3BtYWlsLmNvbSIsInJvbGVzIjpbeyJyb2xlX3VuaXF1ZV9uYW1lIjoiSF9LQU0iLCJyb2xlX3Nob3dfbmFtZSI6IkhLQU0gT3BlcmF0b3IiLCJzdGFrZV9ob2xkZXIiOiJhZmZvcmRwbGFuIiwiX2lkIjoiNjljNDJmNjJmNTg5MDYxMjg3MWJlYTA5IiwiaWQiOiI2OWM0MmY2MmY1ODkwNjEyODcxYmVhMDkifV0sIm9yZ2FuaXphdGlvbiI6eyJpZCI6IjY5MTVmNzgyYjRkYWZmMDI4MjVmZTVjNCIsIm5hbWUiOiJBZmZvcmRwbGFuIiwidHlwZSI6ImFmZm9yZHBsYW4ifSwiaXNIb3NwaXRhbFVuaXQiOmZhbHNlLCJkZXNpZ25hdGlvbiI6ImhrYW0iLCJkZXBhcnRtZW50IjoiNjkwOWYyYTc0YzJlMmE0OTU4MjQ4YzlkIiwidGhlcmFwaWVzIjpbXSwiY291bnRyaWVzIjpbeyJpZCI6IjY5MDE5YjYzMjU5N2FiNmNjNDAzZWZkZiIsImNvdW50eV9jb2RlIjoiSU4iLCJuYW1lIjoiSW5kaWEiLCJfaWQiOiI2OWM0MmY2MmY1ODkwNjEyODcxYmVhMGEifV0sInpvbmVzIjpbXSwic3RhdGVzIjpbeyJpZCI6IjY5MDg5ZTQzYjg0YjVmODc4MjNkZjBhNiIsInN0YXRlX2NvZGUiOiJQQiIsIm5hbWUiOiJQdW5qYWIiLCJfaWQiOiI2OWM0MmY2MmY1ODkwNjEyODcxYmVhMGIifV0sImNpdGllcyI6W3siaWQiOiI2OTYwY2JhMzRhZjFkOGM3MmI4MTUwM2YiLCJjaXR5X2NvZGUiOiJQQl9CQUtMT0giLCJuYW1lIjoiQmFrbG9oIiwiX2lkIjoiNjljNDJmNjJmNTg5MDYxMjg3MWJlYTBjIn1dLCJpYXQiOjE3NzczNTM0NjEsImV4cCI6MTc3NzM4OTQ2MX0.Rq_Og9AEgRFiN5jB35jPQZdbTGw6gusSnQ697SVvcww"
+        },
+        {
+          "name": "hkam_full_access_mode",
+          "value": "true"
+        }
+      ]
+    }
+  ]
+}

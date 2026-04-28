@@ -1,11 +1,12 @@
 /**
  * Hospital Master — Hospital Onboarding → **Hospital** (`/dashboard/hospital-masters`, `/add`).
- * Serial + shared page; **TC01** performs real OTP login (same pattern as User Management).
+ * Serial + shared page; **TC01** is skipped (storage state from global setup; `@login` covered elsewhere).
  *
  * Tags: `@login` (TC01), `@hospital-master` (TC02–TC14). Example:
  * `npx playwright test tests/specs/hospital-masters.authenticated.spec.js --grep '@login|@hospital-master' --project=chromium-authenticated --workers=1`
  *
- * Session: `tests/global-setup.js` + `.auth/qa-session.json` — one OTP before the run; parallel workers reuse it. `FORCE_OTP_LOGIN=1` forces fresh OTP in TC01.
+ * Session: `tests/global-setup.js` + `.auth/qa-session.json` — one OTP before the run; parallel workers reuse it. **TC01** is skipped (storage state from global setup).
+ * **HKAM operator** (`AUTH_PROFILE=hkam_operator`): session `.auth/qa-hkam-operator-session.json`; **TC10** skipped (SPOC auto-filled).
  */
 const { test, expect } = require("@playwright/test");
 const env = require("../../data/env");
@@ -14,6 +15,7 @@ const { HospitalMastersPage } = require("../pages/HospitalMastersPage");
 const { HospitalAddPage } = require("../pages/HospitalAddPage");
 const { getStorageStateForAuthenticatedSuite } = require("../helpers/auth-storage");
 const { ensureAuthenticatedSession } = require("../helpers/authenticated-session");
+const { getAuthProfile } = require("../../data/auth-profiles");
 
 test.describe.configure({ mode: "serial" });
 test.setTimeout(300_000);
@@ -41,6 +43,11 @@ test.describe("Hospital Master @dashboard", () => {
       await sharedContext.close();
     }
   });
+
+  test.skip(
+    true,
+    "TC01 skipped — authenticated context uses global setup / saved storage state (@login covered elsewhere)"
+  );
 
   test("TC01 — Verify AP admin can login with valid credentials @login", async () => {
     await ensureAuthenticatedSession(sharedPage);
@@ -100,6 +107,11 @@ test.describe("Hospital Master @dashboard", () => {
     await add.fillApKamInfoSection();
     await add.expectApKamAutoFilledEmailAndDesignation();
   });
+
+  test.skip(
+    getAuthProfile() === "hkam_operator",
+    "HKAM Operator: Hospital SPOC Info is auto-filled — TC10 not applicable"
+  );
 
   test("TC10 — Verify AP admin is able to fill Hospital SPOC Info section @hospital-master", async () => {
     const add = new HospitalAddPage(sharedPage);

@@ -8,7 +8,8 @@
  * Tags: `@login` (TC01), `@hospital-unit-master` (TC02–TC16).
  * `npx playwright test tests/specs/hospital-unit-masters.authenticated.spec.js --grep '@login|@hospital-unit-master' --project=chromium-authenticated --workers=1`
  *
- * Session: `.auth/qa-session.json` from global setup — parallel workers reuse one login. `FORCE_OTP_LOGIN=1` forces OTP in TC01.
+ * Session: `.auth/qa-session.json` from global setup — parallel workers reuse one login. **TC01** is skipped (storage state from global setup).
+ * **HKAM operator** (`AUTH_PROFILE=hkam_operator`): **TC09** skipped (Infrastructure auto-filled); TC14 retries omit Infrastructure fill for that profile.
  */
 const { test, expect } = require("@playwright/test");
 const env = require("../../data/env");
@@ -18,6 +19,7 @@ const { HospitalUnitMastersPage } = require("../pages/HospitalUnitMastersPage");
 const { HospitalAddPage, FORM_VARIANTS } = require("../pages/HospitalAddPage");
 const { getStorageStateForAuthenticatedSuite } = require("../helpers/auth-storage");
 const { ensureAuthenticatedSession } = require("../helpers/authenticated-session");
+const { getAuthProfile } = require("../../data/auth-profiles");
 
 test.describe.configure({ mode: "serial" });
 test.setTimeout(600_000);
@@ -32,7 +34,9 @@ async function fillHospitalUnitFormAfterSelection(add, hospitalPayload) {
   await add.fillHospitalKybSection(hospitalPayload);
   await add.fillHospitalInformationSection(hospitalPayload);
   await add.fillHospitalHisSection();
-  await add.fillHospitalInfrastructureSection(hospitalPayload);
+  if (getAuthProfile() !== "hkam_operator") {
+    await add.fillHospitalInfrastructureSection(hospitalPayload);
+  }
   await add.fillApKamInfoSection();
   await add.expectApKamAutoFilledEmailAndDesignation();
   await add.fillHospitalSpocSection(hospitalPayload);
@@ -64,6 +68,16 @@ test.describe("Hospital Unit Master @dashboard", () => {
       await sharedContext.close();
     }
   });
+
+  test.skip(
+    true,
+    "TC01 skipped — authenticated context uses global setup / saved storage state (@login covered elsewhere)"
+  );
+
+  test.skip(
+    true,
+    "TC01 skipped — authenticated context uses global setup / saved storage state (@login covered elsewhere)"
+  );
 
   test("TC01 — Verify AP admin can login with valid credentials @login", async () => {
     await ensureAuthenticatedSession(sharedPage);
@@ -123,6 +137,11 @@ test.describe("Hospital Unit Master @dashboard", () => {
     if (!hospitalPayload) throw new Error("Run TC05 first — hospitalPayload is missing.");
     await add.fillHospitalHisSection();
   });
+
+  test.skip(
+    getAuthProfile() === "hkam_operator",
+    "HKAM Operator: Hospital Unit Infrastructure is auto-filled — TC09 not applicable"
+  );
 
   test("TC09 — Verify AP admin is able to fill Hospital Unit Infrastructure section @hospital-unit-master", async () => {
     const add = new HospitalAddPage(sharedPage, UNIT_VARIANT);

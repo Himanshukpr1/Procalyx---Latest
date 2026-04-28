@@ -6,6 +6,7 @@ const { LoginPage } = require("../pages/LoginPage");
 const { OtpPage } = require("../pages/OtpPage");
 const { goToOtpScreenWithRetry } = require("../helpers/otp-flow");
 const { saveLoggedInSession } = require("../helpers/auth-storage");
+const { applyPostOtpHkamContextIfNeeded } = require("../helpers/post-otp-hkam-context");
 
 /**
  * One browser + one tab for this file: shared `context` / `page` (headed mode opens once).
@@ -148,6 +149,8 @@ test.describe("Login", () => {
       await otpPage.fillOtp(capturedOtp);
       await otpPage.waitForRedirectAwayFromLoginOtpStep(45_000);
       await expect(otpPage.headingVerifyOtp).toBeHidden({ timeout: 10_000 });
+      /** HKAM may remain on `/login` until Hospital Unit → My Dashboard → Continue. */
+      await applyPostOtpHkamContextIfNeeded(page);
       await expect(page).not.toHaveURL(/\/login\/?$/);
       await saveLoggedInSession(page.context());
     });
