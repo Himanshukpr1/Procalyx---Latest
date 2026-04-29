@@ -28,8 +28,7 @@ class HospitalUnitMastersPage extends BasePage {
 
   /** Super Admin: **^Hospital Unit$** under onboarding; HKAM: **Hospital Unit Master(s)** drawer label. */
   hospitalUnitNavRoleLocator(scope) {
-    const isHkam = getAuthProfile() === "hkam_operator";
-    const nameRe = isHkam ? /^Hospital Unit(\s+Master(s)?)?$/i : /^Hospital Unit$/;
+    const nameRe = getAuthProfile() === "hkam_operator" ? /^Hospital Unit(\s+Master(s)?)?$/i : /^Hospital Unit$/;
     return scope
       .getByRole("link", { name: nameRe })
       .or(scope.getByRole("button", { name: nameRe }))

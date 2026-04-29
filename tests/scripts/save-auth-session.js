@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Manual: `npm run test:auth:save` (Super Admin) or `npm run test:auth:save:ap-operator` — one OTP, writes
+ * Manual: `npm run test:auth:save` (Super Admin), `test:auth:save:ap-operator`, `test:auth:save:hkam-operator`, `test:auth:save:mkam-operator` — one OTP, writes
  * `data/env.js`’s `authStoragePath` (see `data/auth-profiles.js`).
  */
 const { saveAuthSessionViaOtp } = require("../helpers/auth-storage");

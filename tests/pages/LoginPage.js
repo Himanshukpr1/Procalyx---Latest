@@ -1,4 +1,5 @@
 const { expect } = require("@playwright/test");
+const { getAuthProfile } = require("../../data/auth-profiles");
 const { BasePage } = require("./BasePage");
 
 /**
@@ -20,12 +21,17 @@ class LoginPage extends BasePage {
     /** Accessible name comes from placeholder "you@example.com" */
     this.emailInput = page.getByRole("textbox", { name: "you@example.com" });
     /**
-     * HKAM: shown **after successful OTP** on `/login` — email visible, then **Select Hospital Unit Name**
-     * (MUI combobox / placeholder).
+     * HKAM: after OTP — **Select Hospital Unit Name** (MUI combobox / placeholder).
      */
     this.hospitalUnitCombobox = page
       .getByRole("combobox", { name: /select hospital unit name/i })
       .or(page.getByPlaceholder(/select hospital unit name/i));
+    /**
+     * MKAM: after OTP — **Select Manufacturer Unit Name** (same **My Dashboard** → **Continue** pattern as HKAM).
+     */
+    this.manufacturerUnitCombobox = page
+      .getByRole("combobox", { name: /select manufacturer unit name/i })
+      .or(page.getByPlaceholder(/select manufacturer unit name/i));
     this.continueButton = page.getByRole("button", { name: "Continue" });
 
     this.validationMessage = page.locator('[role="alert"]');
@@ -61,11 +67,12 @@ class LoginPage extends BasePage {
   }
 
   /**
-   * HKAM only — **after OTP is accepted**: screen still on `/login` with user email and
-   * **Select Hospital Unit Name**. Open dropdown, choose **My Dashboard**, then **Continue**.
+   * HKAM / MKAM — **after OTP**: stay on `/login` with unit selector — **My Dashboard** → **Continue**.
+   * HKAM: **Select Hospital Unit Name**; MKAM: **Select Manufacturer Unit Name**.
    */
-  async completeHkamPostOtpHospitalUnitStep() {
-    const combo = this.hospitalUnitCombobox;
+  async completePostOtpKamContextStep() {
+    const combo =
+      getAuthProfile() === "mkam_operator" ? this.manufacturerUnitCombobox : this.hospitalUnitCombobox;
     await combo.first().waitFor({ state: "visible", timeout: 25_000 });
     await combo.first().click();
     const myDashboard = this.page.getByRole("option", { name: /^My Dashboard$/i });
@@ -76,6 +83,11 @@ class LoginPage extends BasePage {
     }).toPass({ timeout: 15_000 });
     await this.continueButton.click();
     await this.page.waitForLoadState("domcontentloaded");
+  }
+
+  /** @deprecated Use `completePostOtpKamContextStep` — kept for callers that reference HKAM-only naming. */
+  async completeHkamPostOtpHospitalUnitStep() {
+    return this.completePostOtpKamContextStep();
   }
 
   async submitContinue() {

@@ -1,6 +1,6 @@
 /**
  * Post-login smoke — session file for the active `AUTH_PROFILE` (e.g. from login @sanity TC 08).
- * HKAM home: `/hkam`; Super Admin / others: `/dashboard`.
+ * HKAM / MKAM home: `/hkam`; Super Admin / others: `/dashboard`.
  */
 const { test, expect } = require("@playwright/test");
 const env = require("../../data/env");

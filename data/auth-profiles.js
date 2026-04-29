@@ -5,6 +5,7 @@ const path = require("path");
  * - `superadmin` (default) — `LOGIN_TEST_EMAIL` or `data/test-data.js` default → `.auth/qa-session.json`
  * - `ap_operator` — `LOGIN_TEST_EMAIL` or `LOGIN_OPERATOR_EMAIL` or `operator123@affordplan.com` → `.auth/qa-ap-operator-session.json`
  * - `hkam_operator` — `LOGIN_TEST_EMAIL` or `LOGIN_HKAM_EMAIL` or HKAM default → `.auth/qa-hkam-operator-session.json` (post-OTP **My Dashboard** context)
+ * - `mkam_operator` — `LOGIN_TEST_EMAIL` or `LOGIN_MKAM_EMAIL` or MKAM default → `.auth/qa-mkam-operator-session.json` (post-OTP **Select Manufacturer Unit Name** → **My Dashboard**)
  *
  * Usage (same spec files, different account):
  *   npm run test:ap-operator-suite          # login.spec + 3 module specs + dashboard.smoke
@@ -13,11 +14,14 @@ const path = require("path");
  *   AUTH_PROFILE=ap_operator npm run test:item-master:flow
  *   AUTH_PROFILE=ap_operator npm run test:auth:save:ap-operator
  *   AUTH_PROFILE=hkam_operator npm run test:auth:save:hkam-operator
+ *   AUTH_PROFILE=mkam_operator npm run test:auth:save:mkam-operator
  * `LOGIN_TEST_EMAIL=...` overrides the email for **any** profile.
  */
 const DEFAULT_OPERATOR_EMAIL = "operator123@affordplan.com";
 /** QA HKAM operator — override with `LOGIN_HKAM_EMAIL`. */
 const DEFAULT_HKAM_EMAIL = "hkamap@yopmail.com";
+/** QA MKAM operator — override with `LOGIN_MKAM_EMAIL`. */
+const DEFAULT_MKAM_EMAIL = "mkamap@yopmail.com";
 
 function getAuthProfile() {
   const p = (process.env.AUTH_PROFILE || "superadmin").toLowerCase().replace(/-/g, "_");
@@ -27,7 +31,20 @@ function getAuthProfile() {
   if (p === "hkam_operator" || p === "hkam") {
     return "hkam_operator";
   }
+  if (p === "mkam_operator" || p === "mkam") {
+    return "mkam_operator";
+  }
   return "superadmin";
+}
+
+/**
+ * HKAM + MKAM: post-OTP unit dropdown → **My Dashboard** → **Continue** (HKAM: hospital unit; MKAM: manufacturer unit).
+ * `/hkam` routes apply only to **HKAM**; **MKAM** uses `/mkam` (see `env.js`).
+ * @returns {boolean}
+ */
+function isKamOperatorProfile() {
+  const profile = getAuthProfile();
+  return profile === "hkam_operator" || profile === "mkam_operator";
 }
 
 /**
@@ -44,6 +61,9 @@ function getLoginEmailForAuth() {
   if (getAuthProfile() === "hkam_operator") {
     return (process.env.LOGIN_HKAM_EMAIL || DEFAULT_HKAM_EMAIL).trim();
   }
+  if (getAuthProfile() === "mkam_operator") {
+    return (process.env.LOGIN_MKAM_EMAIL || DEFAULT_MKAM_EMAIL).trim();
+  }
   const testData = require("./test-data");
   return testData.login.validEmail;
 }
@@ -59,6 +79,9 @@ function resolveAuthStoragePath() {
   }
   if (getAuthProfile() === "hkam_operator") {
     return path.join(root, "qa-hkam-operator-session.json");
+  }
+  if (getAuthProfile() === "mkam_operator") {
+    return path.join(root, "qa-mkam-operator-session.json");
   }
   return path.join(root, "qa-session.json");
 }
@@ -89,6 +112,8 @@ module.exports = {
   getLoginEmailForAuth,
   resolveAuthStoragePath,
   urlPathIsLoginPage,
+  isKamOperatorProfile,
   DEFAULT_AP_OPERATOR_EMAIL: DEFAULT_OPERATOR_EMAIL,
   DEFAULT_HKAM_EMAIL,
+  DEFAULT_MKAM_EMAIL,
 };

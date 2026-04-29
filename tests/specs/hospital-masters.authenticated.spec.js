@@ -6,7 +6,7 @@
  * `npx playwright test tests/specs/hospital-masters.authenticated.spec.js --grep '@login|@hospital-master' --project=chromium-authenticated --workers=1`
  *
  * Session: `tests/global-setup.js` + `.auth/qa-session.json` — one OTP before the run; parallel workers reuse it. `beforeAll` refreshes session on the shared page before TC01.
- * **HKAM operator** (`AUTH_PROFILE=hkam_operator`): session `.auth/qa-hkam-operator-session.json`; **TC02** skipped (no Hospital Onboarding nav); **TC09** uses `testInfo.skip` (AP KAM Info auto-filled), not `test.skip(condition)` before the test (that skips all following tests in the describe).
+ * **HKAM / MKAM** (`hkam_operator` / `mkam_operator`): KAM session files; **TC02** skipped (no Hospital Onboarding nav); **TC09** uses `testInfo.skip` (AP KAM Info auto-filled), not `test.skip(condition)` before the test (that skips all following tests in the describe).
  */
 const { test, expect } = require("@playwright/test");
 const env = require("../../data/env");
@@ -15,7 +15,7 @@ const { HospitalMastersPage } = require("../pages/HospitalMastersPage");
 const { HospitalAddPage } = require("../pages/HospitalAddPage");
 const { getStorageStateForAuthenticatedSuite } = require("../helpers/auth-storage");
 const { ensureAuthenticatedSession } = require("../helpers/authenticated-session");
-const { getAuthProfile } = require("../../data/auth-profiles");
+const { isKamOperatorProfile } = require("../../data/auth-profiles");
 
 test.describe.configure({ mode: "serial" });
 test.setTimeout(300_000);
@@ -54,7 +54,7 @@ test.describe("Hospital Master @dashboard", () => {
 
   test("TC02 — Verify AP admin can click on Hospital Onboarding @hospital-master", async ({}, testInfo) => {
     testInfo.skip(
-      getAuthProfile() === "hkam_operator",
+      isKamOperatorProfile(),
       "HKAM Operator: sidebar has no Hospital Onboarding expand step — TC02 not applicable"
     );
     const list = new HospitalMastersPage(sharedPage);
@@ -106,7 +106,7 @@ test.describe("Hospital Master @dashboard", () => {
 
   test("TC09 — Verify AP admin is able to fill AP KAM Info section @hospital-master", async ({}, testInfo) => {
     testInfo.skip(
-      getAuthProfile() === "hkam_operator",
+      isKamOperatorProfile(),
       "HKAM Operator: AP KAM Info is auto-filled — TC09 not applicable"
     );
     const add = new HospitalAddPage(sharedPage);

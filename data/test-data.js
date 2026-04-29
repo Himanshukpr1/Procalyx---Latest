@@ -2,7 +2,7 @@
  * Test data for automation — login and future flows.
  * Override via env when needed (e.g. CI secrets):
  *   LOGIN_TEST_EMAIL=... LOGIN_INVALID_EMAIL=... npm test
- * AP operator / HKAM operator (separate session files) use `AUTH_PROFILE=ap_operator` / `hkam_operator` — see `data/auth-profiles.js`.
+ * AP / HKAM / MKAM (separate session files) use `AUTH_PROFILE=ap_operator` / `hkam_operator` / `mkam_operator` — see `data/auth-profiles.js`.
  */
 
 module.exports = {

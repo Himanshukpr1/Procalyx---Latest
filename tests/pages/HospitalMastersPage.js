@@ -74,8 +74,7 @@ class HospitalMastersPage extends BasePage {
    * Super Admin: **^Hospital$** only — the broad `/Hospital(\\s+Master(s)?)?/` also matches the separate **Hospital masters** row (different module) and can navigate wrong (e.g. user-management). HKAM: **Hospital Master(s)** top-level label.
    */
   hospitalMasterNavRoleLocator(scope) {
-    const isHkam = getAuthProfile() === "hkam_operator";
-    const nameRe = isHkam ? /^Hospital(\s+Master(s)?)?$/i : /^Hospital$/;
+    const nameRe = getAuthProfile() === "hkam_operator" ? /^Hospital(\s+Master(s)?)?$/i : /^Hospital$/;
     return scope
       .getByRole("link", { name: nameRe })
       .or(scope.getByRole("button", { name: nameRe }))

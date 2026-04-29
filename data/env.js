@@ -1,13 +1,13 @@
-const path = require("path");
 const { resolveAuthStoragePath, getAuthProfile } = require("./auth-profiles");
 
 /**
  * Central place for URLs, timeouts, and static test data.
  * Override BASE_URL via environment: BASE_URL=https://your-app.com npm test
- * Auth session file: `AUTH_PROFILE=superadmin|ap_operator|hkam_operator` — see `data/auth-profiles.js`.
+ * Auth session file: `AUTH_PROFILE=superadmin|ap_operator|hkam_operator|mkam_operator` — see `data/auth-profiles.js`.
  *
- * **HKAM operator** (`hkam_operator`): post-login home `/hkam`; hospital list/add under `/hkam/hospital-management`;
- * hospital unit list/add under `/hkam/hospital-unit-management`. Other profiles keep `/dashboard/...`.
+ * **HKAM** (`hkam_operator`): `/hkam` + `/hkam/hospital-…`
+ * **MKAM** (`mkam_operator`): `/mkam` + `/mkam/manufacturer-management` (Manufacturer Management)
+ * Others: `/dashboard/…`
  */
 module.exports = {
   baseUrl: process.env.BASE_URL || "https://qa.procalyx.net",
@@ -28,8 +28,12 @@ module.exports = {
   authStoragePath: resolveAuthStoragePath(),
 
   get appHomePath() {
-    return getAuthProfile() === "hkam_operator" ? "/hkam" : "/dashboard";
+    const p = getAuthProfile();
+    if (p === "hkam_operator") return "/hkam";
+    if (p === "mkam_operator") return "/mkam";
+    return "/dashboard";
   },
+
   get hospitalMastersPath() {
     return getAuthProfile() === "hkam_operator" ? "/hkam/hospital-management" : "/dashboard/hospital-masters";
   },
@@ -67,5 +71,20 @@ module.exports = {
     return getAuthProfile() === "hkam_operator"
       ? /\/hkam\/hospital-unit-management\/add/
       : /\/dashboard\/hospital-unit-masters\/add/;
+  },
+
+  /** MKAM operator — Manufacturer Management list */
+  get mkamManufacturerManagementPath() {
+    return "/mkam/manufacturer-management";
+  },
+  /** MKAM — Add New Manufacturer */
+  get mkamManufacturerManagementAddPath() {
+    return "/mkam/manufacturer-management/add";
+  },
+  get mkamManufacturerManagementListUrlRe() {
+    return /\/mkam\/manufacturer-management\/?$/;
+  },
+  get mkamManufacturerManagementAddUrlRe() {
+    return /\/mkam\/manufacturer-management\/add/;
   },
 };
