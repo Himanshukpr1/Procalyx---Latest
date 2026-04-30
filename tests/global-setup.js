@@ -1,5 +1,5 @@
 const fs = require("fs");
-const env = require("../data/env");
+const env = require("../data/AP SuperAdmin/env");
 const { saveAuthSessionViaOtp } = require("./helpers/auth-storage");
 
 /**

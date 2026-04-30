@@ -7,13 +7,13 @@
  * Session: `.auth/qa-mkam-operator-session.json`. Reuses OTP + **Manufacturer Unit** → **My Dashboard** from `login.spec`.
  */
 const { test, expect } = require("@playwright/test");
-const env = require("../../data/env");
-const { urlPathIsLoginPage } = require("../../data/auth-profiles");
-const { buildMkamManufacturerPayload } = require("../../data/mkam-manufacturer");
-const { MkamManufacturerManagementPage } = require("../pages/MkamManufacturerManagementPage");
-const { MkamManufacturerAddPage } = require("../pages/MkamManufacturerAddPage");
-const { getStorageStateForAuthenticatedSuite } = require("../helpers/auth-storage");
-const { ensureAuthenticatedSession } = require("../helpers/authenticated-session");
+const env = require("../../../data/AP SuperAdmin/env");
+const { urlPathIsLoginPage } = require("../../../data/AP SuperAdmin/auth-profiles");
+const { buildMkamManufacturerPayload } = require("../../../data/AP SuperAdmin/mkam-manufacturer");
+const { MkamManufacturerManagementPage } = require("../../pages/AP SuperAdmin/MkamManufacturerManagementPage");
+const { MkamManufacturerAddPage } = require("../../pages/AP SuperAdmin/MkamManufacturerAddPage");
+const { getStorageStateForAuthenticatedSuite } = require("../../helpers/auth-storage");
+const { ensureAuthenticatedSession } = require("../../helpers/authenticated-session");
 
 test.describe.configure({ mode: "serial" });
 test.setTimeout(600_000);
@@ -106,7 +106,6 @@ test.describe("MKAM Manufacturer Management @dashboard", () => {
     if (!manufacturerPayload?.mfgLegalName) {
       throw new Error("TC05–TC10 did not set manufacturerPayload — run serially.");
     }
-    /** Pending tab + **MFG Legal Name** column filter (matches automation-created legal name). */
     const searchText = manufacturerPayload.mfgLegalName;
     await list.openManufacturerManagementList();
     await list.expectCreatedMfgListedUnderPendingByLegalName(searchText);

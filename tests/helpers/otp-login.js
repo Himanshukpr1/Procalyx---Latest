@@ -1,6 +1,6 @@
 const { expect } = require("@playwright/test");
-const { getLoginEmailForAuth, urlPathIsLoginPage, isKamOperatorProfile } = require("../../data/auth-profiles");
-const testData = require("../../data/test-data");
+const { getLoginEmailForAuth, urlPathIsLoginPage, isKamOperatorProfile } = require("../../data/AP SuperAdmin/auth-profiles");
+const testData = require("../../data/AP SuperAdmin/test-data");
 const { goToOtpScreenWithRetry } = require("./otp-flow");
 const { applyPostOtpHkamContextIfNeeded } = require("./post-otp-hkam-context");
 

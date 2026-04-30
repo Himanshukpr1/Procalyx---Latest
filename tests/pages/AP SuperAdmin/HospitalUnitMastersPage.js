@@ -1,6 +1,6 @@
 const { expect } = require("@playwright/test");
-const env = require("../../data/env");
-const { getAuthProfile } = require("../../data/auth-profiles");
+const env = require("../../../data/AP SuperAdmin/env");
+const { getAuthProfile } = require("../../../data/AP SuperAdmin/auth-profiles");
 const { BasePage } = require("./BasePage");
 
 /**
@@ -14,7 +14,8 @@ class HospitalUnitMastersPage extends BasePage {
     this.pageHeading = page.getByRole("heading", {
       name: /hospital\s+unit\s+(master|masters|management)/i,
     });
-    this.hospitalUnitTable = page.locator("table").first();
+    /** MUI DataGrid uses `role="grid"`; legacy builds may still render `<table>`. */
+    this.dataGrid = page.locator('[role="grid"], table').first();
   }
 
   navScope() {
@@ -113,6 +114,7 @@ class HospitalUnitMastersPage extends BasePage {
   async openHospitalUnitMastersList(listPath = env.hospitalUnitMastersPath) {
     await this.goto(listPath);
     await this.page.waitForLoadState("domcontentloaded");
+    await expect(this.dataGrid).toBeVisible({ timeout: 45_000 });
   }
 
   async expectHospitalUnitMasterListVisible() {
@@ -132,20 +134,67 @@ class HospitalUnitMastersPage extends BasePage {
 
   /**
    * TC15 — assert **Hospital Unit** name appears in the grid.
-   * @param {string} unitName — `info.hospitalName` from the add form
+   * Headless often differs from headed when only `<table>` is targeted while QA uses **MUI DataGrid**
+   * (`role="grid"`), or when row cells live outside `<tbody>` — scope searches + virtualization-friendly polls.
+   * @param {string} unitName — `hospitalPayload.hospitalName` from create flow
    */
   async expectHospitalUnitListedByName(unitName) {
-    const table = this.hospitalUnitTable;
-    await expect(table).toBeVisible({ timeout: 30_000 });
+    const grid = this.dataGrid;
+    await expect(grid).toBeVisible({ timeout: 45_000 });
 
-    const headerInputs = table.locator("thead").locator('input[type="text"], input[type="search"]');
-    if ((await headerInputs.count()) > 0) {
-      await headerInputs.first().fill(unitName);
+    const thead = grid.locator("thead");
+    if ((await thead.count()) > 0) {
+      const headerRow = thead.locator("tr").first();
+      const headerCells = headerRow.locator("th, td");
+      const hCount = await headerCells.count();
+      let colIdx = -1;
+      for (let i = 0; i < hCount; i += 1) {
+        const t = (await headerCells.nth(i).innerText()).trim();
+        if (
+          /hospital\s*unit\s*name/i.test(t) ||
+          /^unit\s*name$/i.test(t) ||
+          /^hospital\s*name$/i.test(t)
+        ) {
+          colIdx = i;
+          break;
+        }
+      }
+
+      if (colIdx >= 0 && (await thead.locator("tr").count()) > 1) {
+        const filterRow = thead.locator("tr").nth(1);
+        const inp = filterRow.locator("th, td").nth(colIdx).locator('input[type="text"], input[type="search"]').first();
+        if ((await inp.count()) > 0) {
+          await inp.fill(unitName);
+        }
+      } else {
+        const headerInputs = thead.locator('input[type="text"], input[type="search"]');
+        const count = await headerInputs.count();
+        if (count > 0) {
+          await headerInputs.first().fill(unitName);
+        }
+      }
+    } else {
+      const muiHdrInputs = grid.locator(".MuiDataGrid-columnHeaders").locator('input[type="text"], input[type="search"]');
+      if ((await muiHdrInputs.count()) > 0) {
+        await muiHdrInputs.first().fill(unitName);
+      } else {
+        const fallback = grid.locator('input[type="text"], input[type="search"]').first();
+        if ((await fallback.count()) > 0) {
+          await fallback.fill(unitName);
+        }
+      }
     }
 
-    await expect(async () => {
-      await expect(this.page.locator("tbody").getByText(unitName, { exact: false }).first()).toBeVisible();
-    }).toPass({ timeout: 45_000 });
+    await expect
+      .poll(
+        async () => {
+          const hit = grid.getByText(unitName, { exact: false }).first();
+          await hit.scrollIntoViewIfNeeded().catch(() => {});
+          return hit.isVisible().catch(() => false);
+        },
+        { timeout: 60_000, intervals: [300, 600, 1200] }
+      )
+      .toBe(true);
   }
 }
 

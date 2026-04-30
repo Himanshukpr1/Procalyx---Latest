@@ -1,4 +1,4 @@
-const { test, expect } = require("../fixtures/base");
+const { test, expect } = require("../../fixtures/base");
 
 /** Optional: support & legal triggers (same locators as Login page) */
 test.describe("Login page — footer & support", () => {

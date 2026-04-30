@@ -1,6 +1,6 @@
 const { expect } = require("@playwright/test");
-const env = require("../../data/env");
-const { urlPathIsLoginPage, isKamOperatorProfile } = require("../../data/auth-profiles");
+const env = require("../../data/AP SuperAdmin/env");
+const { urlPathIsLoginPage, isKamOperatorProfile } = require("../../data/AP SuperAdmin/auth-profiles");
 const { performOtpLoginOnPage } = require("./otp-login");
 
 const SHELL_TIMEOUT_MS = 90_000;
@@ -37,7 +37,7 @@ async function ensureAuthenticatedSession(page) {
     return;
   }
 
-  const { UserManagementPage } = require("../pages/UserManagementPage");
+  const { UserManagementPage } = require("../pages/AP SuperAdmin/UserManagementPage");
   const um = new UserManagementPage(page);
   await um.expectSessionShowsAdminUser();
 }

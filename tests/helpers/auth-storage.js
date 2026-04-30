@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const { chromium } = require("@playwright/test");
-const env = require("../../data/env");
+const env = require("../../data/AP SuperAdmin/env");
 const { performOtpLoginOnPage } = require("./otp-login");
 
 /** @deprecated use `env.authStoragePath` — kept for login.spec.js */

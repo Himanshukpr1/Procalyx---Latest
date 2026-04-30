@@ -3,7 +3,7 @@
  * `FormSection` `title` → `role="region"` + `aria-label` (procalyx-ui).
  * URL regexes follow `data/env.js` for the active `AUTH_PROFILE` (HKAM uses `/hkam/...`).
  */
-const { getAuthProfile } = require("../../data/auth-profiles");
+const { getAuthProfile } = require("../../data/AP SuperAdmin/auth-profiles");
 
 const HOSPITAL_MASTER_BASE = {
   id: "hospitalMaster",

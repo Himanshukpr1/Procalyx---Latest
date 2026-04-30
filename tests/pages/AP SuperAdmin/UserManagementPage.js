@@ -1,10 +1,10 @@
 const { expect } = require("@playwright/test");
 const { BasePage } = require("./BasePage");
-const umData = require("../../data/user-management");
+const umData = require("../../../data/AP SuperAdmin/user-management");
 const {
   superadminUserManagementLocators,
   UM_TEXT,
-} = require("../locators/superadmin-user-management.locators");
+} = require("../../locators/superadmin-user-management.locators");
 
 function escapeRx(s) {
   return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");

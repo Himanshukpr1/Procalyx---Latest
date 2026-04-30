@@ -10,7 +10,7 @@ const { resolveAuthStoragePath, getAuthProfile } = require("./auth-profiles");
  * Others: `/dashboard/…`
  */
 module.exports = {
-  baseUrl: process.env.BASE_URL || "https://qa.procalyx.net",
+  baseUrl: process.env.BASE_URL || "https://dev.procalyx.net",
   loginPath: "/login",
   /** Post-login User Management module */
   userManagementPath: "/dashboard/user-management",

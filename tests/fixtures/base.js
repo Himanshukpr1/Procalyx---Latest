@@ -1,6 +1,6 @@
 const baseTest = require("@playwright/test").test;
-const { HomePage } = require("../pages/HomePage");
-const { LoginPage } = require("../pages/LoginPage");
+const { HomePage } = require("../pages/AP SuperAdmin/HomePage");
+const { LoginPage } = require("../pages/AP SuperAdmin/LoginPage");
 
 /**
  * Custom fixtures: inject page objects into tests.

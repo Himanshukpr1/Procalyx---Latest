@@ -8,12 +8,12 @@
  * Requires a valid stored session for the active `AUTH_PROFILE` (see `data/auth-profiles.js`) or interactive OTP; refresh with `REFRESH_AUTH=1` or the matching `npm run test:auth:save` / `test:auth:save:ap-operator` if TC02+ fail after TC01.
  */
 const { test } = require("@playwright/test");
-const env = require("../../data/env");
-const itemData = require("../../data/item-master");
-const { ItemMasterPage } = require("../pages/ItemMasterPage");
-const { ItemMasterAddPage } = require("../pages/ItemMasterAddPage");
-const { getStorageStateForAuthenticatedSuite } = require("../helpers/auth-storage");
-const { ensureAuthenticatedSession } = require("../helpers/authenticated-session");
+const env = require("../../../data/AP SuperAdmin/env");
+const itemData = require("../../../data/AP SuperAdmin/item-master");
+const { ItemMasterPage } = require("../../pages/AP SuperAdmin/ItemMasterPage");
+const { ItemMasterAddPage } = require("../../pages/AP SuperAdmin/ItemMasterAddPage");
+const { getStorageStateForAuthenticatedSuite } = require("../../helpers/auth-storage");
+const { ensureAuthenticatedSession } = require("../../helpers/authenticated-session");
 
 test.describe.configure({ mode: "serial" });
 test.setTimeout(300_000);

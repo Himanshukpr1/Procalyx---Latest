@@ -5,14 +5,14 @@
  * `npx playwright test tests/specs/manufacturer-masters-ap.authenticated.spec.js --grep '@login|@manufacturer-masters-ap|@manufacturer-onboarding' --project=chromium-authenticated --workers=1`
  */
 const { test, expect } = require("@playwright/test");
-const env = require("../../data/env");
-const mfgData = require("../../data/manufacturer-masters");
-const { ManufacturerMastersPage } = require("../pages/ManufacturerMastersPage");
-const { ManufacturerMastersAddPage } = require("../pages/ManufacturerMastersAddPage");
-const { ManufacturerOnboardingPage } = require("../pages/ManufacturerOnboardingPage");
-const { ManufacturerOnboardingEditPage } = require("../pages/ManufacturerOnboardingEditPage");
-const { getStorageStateForAuthenticatedSuite } = require("../helpers/auth-storage");
-const { ensureAuthenticatedSession } = require("../helpers/authenticated-session");
+const env = require("../../../data/AP SuperAdmin/env");
+const mfgData = require("../../../data/AP SuperAdmin/manufacturer-masters");
+const { ManufacturerMastersPage } = require("../../pages/AP SuperAdmin/ManufacturerMastersPage");
+const { ManufacturerMastersAddPage } = require("../../pages/AP SuperAdmin/ManufacturerMastersAddPage");
+const { ManufacturerOnboardingPage } = require("../../pages/AP SuperAdmin/ManufacturerOnboardingPage");
+const { ManufacturerOnboardingEditPage } = require("../../pages/AP SuperAdmin/ManufacturerOnboardingEditPage");
+const { getStorageStateForAuthenticatedSuite } = require("../../helpers/auth-storage");
+const { ensureAuthenticatedSession } = require("../../helpers/authenticated-session");
 
 test.describe.configure({ mode: "serial" });
 test.setTimeout(300_000);

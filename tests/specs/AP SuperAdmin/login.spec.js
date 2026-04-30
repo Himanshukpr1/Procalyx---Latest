@@ -1,12 +1,12 @@
-const { test, expect } = require("../fixtures/base");
-const env = require("../../data/env");
-const testData = require("../../data/test-data");
-const { getLoginEmailForAuth } = require("../../data/auth-profiles");
-const { LoginPage } = require("../pages/LoginPage");
-const { OtpPage } = require("../pages/OtpPage");
-const { goToOtpScreenWithRetry } = require("../helpers/otp-flow");
-const { saveLoggedInSession } = require("../helpers/auth-storage");
-const { applyPostOtpHkamContextIfNeeded } = require("../helpers/post-otp-hkam-context");
+const { test, expect } = require("../../fixtures/base");
+const env = require("../../../data/AP SuperAdmin/env");
+const testData = require("../../../data/AP SuperAdmin/test-data");
+const { getLoginEmailForAuth } = require("../../../data/AP SuperAdmin/auth-profiles");
+const { LoginPage } = require("../../pages/AP SuperAdmin/LoginPage");
+const { OtpPage } = require("../../pages/AP SuperAdmin/OtpPage");
+const { goToOtpScreenWithRetry } = require("../../helpers/otp-flow");
+const { saveLoggedInSession } = require("../../helpers/auth-storage");
+const { applyPostOtpHkamContextIfNeeded } = require("../../helpers/post-otp-hkam-context");
 
 /**
  * One browser + one tab for this file: shared `context` / `page` (headed mode opens once).

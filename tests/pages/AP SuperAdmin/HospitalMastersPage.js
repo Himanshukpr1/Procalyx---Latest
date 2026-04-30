@@ -1,6 +1,6 @@
 const { expect } = require("@playwright/test");
-const env = require("../../data/env");
-const { getAuthProfile } = require("../../data/auth-profiles");
+const env = require("../../../data/AP SuperAdmin/env");
+const { getAuthProfile } = require("../../../data/AP SuperAdmin/auth-profiles");
 const { BasePage } = require("./BasePage");
 
 /**

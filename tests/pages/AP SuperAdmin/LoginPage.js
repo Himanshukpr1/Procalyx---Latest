@@ -1,5 +1,5 @@
 const { expect } = require("@playwright/test");
-const { getAuthProfile } = require("../../data/auth-profiles");
+const { getAuthProfile } = require("../../../data/AP SuperAdmin/auth-profiles");
 const { BasePage } = require("./BasePage");
 
 /**

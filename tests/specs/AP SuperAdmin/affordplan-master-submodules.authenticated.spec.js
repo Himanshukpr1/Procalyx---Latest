@@ -7,12 +7,12 @@
  * AP operator: `npm run test:affordplan-master-sub:ap-operator:flow`.
  */
 const { test } = require("@playwright/test");
-const env = require("../../data/env");
-const { affordplanMasterSubmodules, buildUniqueDisplayName } = require("../../data/affordplan-master-submodules");
-const { AffordplanMasterSubmoduleListPage } = require("../pages/AffordplanMasterSubmoduleListPage");
-const { AffordplanMasterSubmoduleAddPage } = require("../pages/AffordplanMasterSubmoduleAddPage");
-const { getStorageStateForAuthenticatedSuite } = require("../helpers/auth-storage");
-const { ensureAuthenticatedSession } = require("../helpers/authenticated-session");
+const env = require("../../../data/AP SuperAdmin/env");
+const { affordplanMasterSubmodules, buildUniqueDisplayName } = require("../../../data/AP SuperAdmin/affordplan-master-submodules");
+const { AffordplanMasterSubmoduleListPage } = require("../../pages/AP SuperAdmin/AffordplanMasterSubmoduleListPage");
+const { AffordplanMasterSubmoduleAddPage } = require("../../pages/AP SuperAdmin/AffordplanMasterSubmoduleAddPage");
+const { getStorageStateForAuthenticatedSuite } = require("../../helpers/auth-storage");
+const { ensureAuthenticatedSession } = require("../../helpers/authenticated-session");
 
 const SUB = affordplanMasterSubmodules();
 

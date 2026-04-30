@@ -12,14 +12,14 @@
  * **HKAM / MKAM**: **TC02** skipped (no Hospital Onboarding nav); **TC10** skipped via `testInfo.skip` (AP KAM Info auto-filled). Sidebar label **Hospital Unit Masters** — see `HospitalUnitMastersPage.clickHospitalUnitSidebarLink`.
  */
 const { test, expect } = require("@playwright/test");
-const env = require("../../data/env");
-const hmData = require("../../data/hospital-masters");
-const { HospitalMastersPage } = require("../pages/HospitalMastersPage");
-const { HospitalUnitMastersPage } = require("../pages/HospitalUnitMastersPage");
-const { HospitalAddPage, getFormVariants } = require("../pages/HospitalAddPage");
-const { getStorageStateForAuthenticatedSuite } = require("../helpers/auth-storage");
-const { ensureAuthenticatedSession } = require("../helpers/authenticated-session");
-const { isKamOperatorProfile } = require("../../data/auth-profiles");
+const env = require("../../../data/AP SuperAdmin/env");
+const hmData = require("../../../data/AP SuperAdmin/hospital-masters");
+const { HospitalMastersPage } = require("../../pages/AP SuperAdmin/HospitalMastersPage");
+const { HospitalUnitMastersPage } = require("../../pages/AP SuperAdmin/HospitalUnitMastersPage");
+const { HospitalAddPage, getFormVariants } = require("../../pages/AP SuperAdmin/HospitalAddPage");
+const { getStorageStateForAuthenticatedSuite } = require("../../helpers/auth-storage");
+const { ensureAuthenticatedSession } = require("../../helpers/authenticated-session");
+const { isKamOperatorProfile } = require("../../../data/AP SuperAdmin/auth-profiles");
 
 test.describe.configure({ mode: "serial" });
 test.setTimeout(600_000);
@@ -57,6 +57,7 @@ test.describe("Hospital Unit Master @dashboard", () => {
     sharedContext = await browser.newContext({
       baseURL: env.baseUrl,
       storageState: getStorageStateForAuthenticatedSuite(),
+      viewport: { width: 1920, height: 1080 },
     });
     sharedPage = await sharedContext.newPage();
     await ensureAuthenticatedSession(sharedPage);
@@ -69,7 +70,7 @@ test.describe("Hospital Unit Master @dashboard", () => {
   });
 
   test("TC01 — Verify AP admin can login with valid credentials @login", async () => {
-    const { urlPathIsLoginPage } = require("../../data/auth-profiles");
+    const { urlPathIsLoginPage } = require("../../../data/AP SuperAdmin/auth-profiles");
     await expect(async () => {
       expect(urlPathIsLoginPage(sharedPage.url())).toBe(false);
     }).toPass({ timeout: 15_000 });

@@ -1,7 +1,12 @@
-const { LoginPage } = require("../pages/LoginPage");
-const { OtpPage } = require("../pages/OtpPage");
+const { LoginPage } = require("../pages/AP SuperAdmin/LoginPage");
+const { OtpPage } = require("../pages/AP SuperAdmin/OtpPage");
 const { waitForOtpInResponse } = require("../../utils/otp-api");
-const env = require("../../data/env");
+const env = require("../../data/AP SuperAdmin/env");
+
+/** Wall-clock delay without tying to Playwright page lifecycle (cooldown backoff survives headed/debug closes). */
+function sleepMs(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 /** Cooldown / throttling on the email step (Verify OTP not shown yet) */
 function otpRateLimitedLocator(page) {
@@ -67,7 +72,10 @@ async function goToOtpScreenWithRetry(page, email, opts = {}) {
     if (attempt === maxAttempts) {
       return last;
     }
-    await page.waitForTimeout(backoffMs);
+    console.warn(
+      `[otp-flow] OTP rate limit / cooldown — waiting ${Math.round(backoffMs / 1000)}s before retry (${attempt}/${maxAttempts})…`
+    );
+    await sleepMs(backoffMs);
     await page.goto(`${env.baseUrl}/login`, { waitUntil: "domcontentloaded" });
   }
   return /** @type {typeof last} */ (last);

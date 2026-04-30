@@ -1,7 +1,7 @@
 /**
  * Data Operator **Manufacturer Masters** (`/dashboard/manufacturer-masters-ap`) — minimal create payload.
  */
-const { randomDigits } = require("../utils/random-user");
+const { randomDigits } = require("../../utils/random-user");
 const { assertValidPanGst, hospitalAddDropdownDefaults } = require("./hospital-masters");
 
 function uniqueMfgSubsidiaryName(prefix = "Auto MFG") {

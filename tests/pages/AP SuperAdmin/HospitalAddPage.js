@@ -1,8 +1,8 @@
 const { expect } = require("@playwright/test");
 const { BasePage } = require("./BasePage");
-const hmData = require("../../data/hospital-masters");
-const { createHospitalAddLocators } = require("../locators/hospital-masters-add.locators");
-const { getFormVariants } = require("../config/hospital-form-variants");
+const hmData = require("../../../data/AP SuperAdmin/hospital-masters");
+const { createHospitalAddLocators } = require("../../locators/hospital-masters-add.locators");
+const { getFormVariants } = require("../../config/hospital-form-variants");
 
 /**
  * Prefer `Auto Hospital …` options (matches `uniqueHospitalName()`), newest first by embedded timestamp.

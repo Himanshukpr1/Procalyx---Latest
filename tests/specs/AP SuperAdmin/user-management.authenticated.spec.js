@@ -14,12 +14,12 @@
  * Session: `.auth/qa-session.json` — one OTP per run via global setup; parallel workers share it. `FORCE_OTP_LOGIN=1` forces OTP in TC01.
  */
 const { test, expect } = require("@playwright/test");
-const env = require("../../data/env");
-const umData = require("../../data/user-management");
-const { UserManagementPage } = require("../pages/UserManagementPage");
-const { buildRandomUserProfile } = require("../../utils/random-user");
-const { getStorageStateForAuthenticatedSuite } = require("../helpers/auth-storage");
-const { ensureAuthenticatedSession } = require("../helpers/authenticated-session");
+const env = require("../../../data/AP SuperAdmin/env");
+const umData = require("../../../data/AP SuperAdmin/user-management");
+const { UserManagementPage } = require("../../pages/AP SuperAdmin/UserManagementPage");
+const { buildRandomUserProfile } = require("../../../utils/random-user");
+const { getStorageStateForAuthenticatedSuite } = require("../../helpers/auth-storage");
+const { ensureAuthenticatedSession } = require("../../helpers/authenticated-session");
 
 test.describe.configure({ mode: "serial" });
 test.setTimeout(180_000);

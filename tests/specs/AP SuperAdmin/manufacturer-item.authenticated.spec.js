@@ -6,12 +6,12 @@
  * AP operator: `npm run test:manufacturer-item:ap-operator:flow` (sets `AUTH_PROFILE=ap_operator`; see `data/auth-profiles.js`).
  */
 const { test } = require("@playwright/test");
-const env = require("../../data/env");
-const itemData = require("../../data/manufacturer-item");
-const { ManufacturerItemPage } = require("../pages/ManufacturerItemPage");
-const { ManufacturerItemAddPage } = require("../pages/ManufacturerItemAddPage");
-const { getStorageStateForAuthenticatedSuite } = require("../helpers/auth-storage");
-const { ensureAuthenticatedSession } = require("../helpers/authenticated-session");
+const env = require("../../../data/AP SuperAdmin/env");
+const itemData = require("../../../data/AP SuperAdmin/manufacturer-item");
+const { ManufacturerItemPage } = require("../../pages/AP SuperAdmin/ManufacturerItemPage");
+const { ManufacturerItemAddPage } = require("../../pages/AP SuperAdmin/ManufacturerItemAddPage");
+const { getStorageStateForAuthenticatedSuite } = require("../../helpers/auth-storage");
+const { ensureAuthenticatedSession } = require("../../helpers/authenticated-session");
 
 test.describe.configure({ mode: "serial" });
 test.setTimeout(300_000);
@@ -30,6 +30,8 @@ test.describe("Manufacturer Item @dashboard", () => {
     sharedContext = await browser.newContext({
       baseURL: env.baseUrl,
       storageState: getStorageStateForAuthenticatedSuite(),
+      /** Align with typical headed window — smaller defaults break MUI virtualized rows / Autocomplete portal in headless. */
+      viewport: { width: 1920, height: 1080 },
     });
     sharedPage = await sharedContext.newPage();
   });
@@ -70,7 +72,8 @@ test.describe("Manufacturer Item @dashboard", () => {
 
     if (!(await add.isOnEditView())) {
       await list.openManufacturerItemList(env.manufacturerItemPath);
-      await list.clickRandomRowEditInActions();
+      /** First row avoids virtualized-grid randomness that differs headless vs headed. */
+      await list.clickEditInActionsForRowIndex(0);
     }
     await add.expectEditManufacturerItemFormLoaded();
     await add.fillAffordplanGenericItem(itemData.affordplanGenericItemSearch);

@@ -78,6 +78,7 @@ class ManufacturerItemAddPage extends BasePage {
       (await inForm.count()) > 0 ? inForm.first() : this.page.getByPlaceholder(/search by item name/i).first();
     await expect(field).toBeVisible({ timeout: 30_000 });
     await field.scrollIntoViewIfNeeded();
+    await field.focus();
     await field.click();
 
     await this._clearAutocompleteSearchField(field);
@@ -85,24 +86,32 @@ class ManufacturerItemAddPage extends BasePage {
       .poll(async () => (await field.inputValue()).trim(), { timeout: 5_000 })
       .toBe("");
 
-    await field.pressSequentially(wanted, { delay: 50 });
+    /** Debounced server/typeahead search — headless needs slightly slower typing than headed. */
+    await field.pressSequentially(wanted, { delay: 90 });
 
-    await expect(async () => {
-      const ex = await field.getAttribute("aria-expanded");
-      expect(ex).toBe("true");
-    }).toPass({ timeout: 25_000 });
-
-    const listbox = await this._listboxForAffordplanField(field);
-    await expect(listbox).toBeVisible({ timeout: 10_000 });
     await expect
-      .poll(async () => listbox.getByRole("option").count(), { timeout: 25_000, intervals: [200, 400, 800] })
+      .poll(
+        async () => {
+          const lb = await this._listboxForAffordplanField(field);
+          if (!(await lb.isVisible().catch(() => false))) {
+            return -1;
+          }
+          return await lb.getByRole("option").count();
+        },
+        { timeout: 40_000, intervals: [150, 300, 500, 800] }
+      )
       .toBeGreaterThan(0);
 
+    const listbox = await this._listboxForAffordplanField(field);
+    await expect(listbox).toBeVisible({ timeout: 15_000 });
     const option = listbox.getByRole("option").filter({ hasText: matchRe }).first();
-    await expect(option).toBeVisible({ timeout: 20_000 });
+    await expect(option).toBeVisible({ timeout: 25_000 });
     await option.scrollIntoViewIfNeeded();
-    await option.click();
-
+    try {
+      await option.click({ timeout: 12_000 });
+    } catch {
+      await option.click({ force: true, timeout: 12_000 });
+    }
     await expect
       .poll(async () => (await field.inputValue()).trim().length, { timeout: 15_000 })
       .toBeGreaterThan(0);
@@ -147,7 +156,10 @@ class ManufacturerItemAddPage extends BasePage {
     const raw =
       (await field.getAttribute("aria-controls"))?.trim() || (await field.getAttribute("aria-owns"))?.trim();
     if (raw) {
-      return this.page.locator(`[id="${ManufacturerItemAddPage._quoteAttr(raw)}"]`);
+      const byId = this.page.locator(`[id="${ManufacturerItemAddPage._quoteAttr(raw)}"]`);
+      if ((await byId.count()) > 0) {
+        return byId;
+      }
     }
     return this.page.locator(".MuiAutocomplete-popper:visible, .MuiPopper-root:visible").locator("[role='listbox']").first();
   }

@@ -1,5 +1,5 @@
-const { isKamOperatorProfile } = require("../../data/auth-profiles");
-const { LoginPage } = require("../pages/LoginPage");
+const { isKamOperatorProfile } = require("../../data/AP SuperAdmin/auth-profiles");
+const { LoginPage } = require("../pages/AP SuperAdmin/LoginPage");
 
 /**
  * HKAM / MKAM: after OTP, the app can stay on `/login` with a unit selector — **My Dashboard** → **Continue**.

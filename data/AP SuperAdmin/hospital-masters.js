@@ -1,7 +1,7 @@
 /**
  * Hospital Master — add form test data (QA). Override via env when QA copy or validation rules change.
  */
-const { randomDigits } = require("../utils/random-user");
+const { randomDigits } = require("../../utils/random-user");
 
 function uniqueHospitalName(prefix = "Auto Hospital") {
   return `${prefix} ${Date.now()}-${randomDigits(4)}`;

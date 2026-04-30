@@ -1,7 +1,7 @@
 // @ts-check
 const fs = require("fs");
 const { defineConfig, devices } = require("@playwright/test");
-const { resolveAuthStoragePath } = require("./data/auth-profiles");
+const { resolveAuthStoragePath } = require("./data/AP SuperAdmin/auth-profiles");
 
 const authStoragePath = resolveAuthStoragePath();
 const authenticatedStorage = fs.existsSync(authStoragePath) ? { storageState: authStoragePath } : {};

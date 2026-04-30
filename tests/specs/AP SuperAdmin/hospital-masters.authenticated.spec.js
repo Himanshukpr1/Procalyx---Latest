@@ -9,13 +9,13 @@
  * **HKAM / MKAM** (`hkam_operator` / `mkam_operator`): KAM session files; **TC02** skipped (no Hospital Onboarding nav); **TC09** uses `testInfo.skip` (AP KAM Info auto-filled), not `test.skip(condition)` before the test (that skips all following tests in the describe).
  */
 const { test, expect } = require("@playwright/test");
-const env = require("../../data/env");
-const hmData = require("../../data/hospital-masters");
-const { HospitalMastersPage } = require("../pages/HospitalMastersPage");
-const { HospitalAddPage } = require("../pages/HospitalAddPage");
-const { getStorageStateForAuthenticatedSuite } = require("../helpers/auth-storage");
-const { ensureAuthenticatedSession } = require("../helpers/authenticated-session");
-const { isKamOperatorProfile } = require("../../data/auth-profiles");
+const env = require("../../../data/AP SuperAdmin/env");
+const hmData = require("../../../data/AP SuperAdmin/hospital-masters");
+const { HospitalMastersPage } = require("../../pages/AP SuperAdmin/HospitalMastersPage");
+const { HospitalAddPage } = require("../../pages/AP SuperAdmin/HospitalAddPage");
+const { getStorageStateForAuthenticatedSuite } = require("../../helpers/auth-storage");
+const { ensureAuthenticatedSession } = require("../../helpers/authenticated-session");
+const { isKamOperatorProfile } = require("../../../data/AP SuperAdmin/auth-profiles");
 
 test.describe.configure({ mode: "serial" });
 test.setTimeout(300_000);
@@ -46,7 +46,7 @@ test.describe("Hospital Master @dashboard", () => {
   });
 
   test("TC01 — Verify AP admin can login with valid credentials @login", async () => {
-    const { urlPathIsLoginPage } = require("../../data/auth-profiles");
+    const { urlPathIsLoginPage } = require("../../../data/AP SuperAdmin/auth-profiles");
     await expect(async () => {
       expect(urlPathIsLoginPage(sharedPage.url())).toBe(false);
     }).toPass({ timeout: 15_000 });
